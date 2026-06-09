@@ -5,7 +5,25 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-function DroidModel({ path }: { path: string }) {
+interface DroidSceneMotion {
+  drift: number;
+  spin: number;
+}
+
+interface DroidModelProps {
+  motion?: DroidSceneMotion;
+  path: string;
+  variant: "hero" | "showcase";
+}
+
+interface DroidSceneProps {
+  className?: string;
+  motion?: DroidSceneMotion;
+  variant?: "hero" | "showcase";
+  visible: boolean;
+}
+
+function DroidModel({ path, motion, variant }: DroidModelProps) {
   const { scene } = useGLTF(path);
   const groupRef = useRef<THREE.Group>(null);
   const mouse = useRef({ x: 0, y: 0 });
@@ -54,22 +72,42 @@ function DroidModel({ path }: { path: string }) {
       return;
     }
 
-    smoothMouse.current.x += (mouse.current.x - smoothMouse.current.x) * 2.4 * delta;
-    smoothMouse.current.y += (mouse.current.y - smoothMouse.current.y) * 2.4 * delta;
+    if (variant === "hero") {
+      smoothMouse.current.x += (mouse.current.x - smoothMouse.current.x) * 2.4 * delta;
+      smoothMouse.current.y += (mouse.current.y - smoothMouse.current.y) * 2.4 * delta;
+
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(
+        groupRef.current.rotation.y,
+        smoothMouse.current.x * 0.2 - 0.12,
+        2.2 * delta
+      );
+
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(
+        groupRef.current.rotation.x,
+        smoothMouse.current.y * -0.1 - 0.08,
+        2.2 * delta
+      );
+
+      groupRef.current.position.y = Math.sin(Date.now() * 0.001) * 0.06;
+      return;
+    }
+
+    const spinAmount = motion?.spin ?? 0;
+    const driftAmount = motion?.drift ?? 0;
+    const time = Date.now() * 0.001;
 
     groupRef.current.rotation.y = THREE.MathUtils.lerp(
       groupRef.current.rotation.y,
-      smoothMouse.current.x * 0.2 - 0.12,
-      2.2 * delta
+      -0.12 + spinAmount * Math.PI * 2,
+      2.6 * delta
     );
-
     groupRef.current.rotation.x = THREE.MathUtils.lerp(
       groupRef.current.rotation.x,
-      smoothMouse.current.y * -0.1 - 0.08,
-      2.2 * delta
+      -0.06 + Math.sin(time * 0.8) * 0.025 * driftAmount,
+      2.4 * delta
     );
-
-    groupRef.current.position.y = Math.sin(Date.now() * 0.001) * 0.06;
+    groupRef.current.position.y = Math.sin(time * 1.25) * (0.04 + driftAmount * 0.12);
+    groupRef.current.position.x = Math.sin(time * 0.72) * driftAmount * 0.12;
   });
 
   return (
@@ -79,7 +117,12 @@ function DroidModel({ path }: { path: string }) {
   );
 }
 
-export function DroidScene({ visible }: { visible: boolean }) {
+export function DroidScene({
+  className,
+  motion,
+  variant = "hero",
+  visible,
+}: DroidSceneProps) {
   const [mounted, setMounted] = useState(false);
   const [modelPath, setModelPath] = useState<string | null>(null);
 
@@ -118,7 +161,7 @@ export function DroidScene({ visible }: { visible: boolean }) {
 
   return (
     <div
-      className="hero__model-canvas"
+      className={className ?? "hero__model-canvas"}
       style={{
         opacity: mounted ? 1 : 0,
         transition: "opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1)"
@@ -133,7 +176,7 @@ export function DroidScene({ visible }: { visible: boolean }) {
           <ambientLight intensity={1.1} />
           <directionalLight position={[6, 8, 6]} intensity={1.35} />
           <directionalLight position={[-5, 2, -4]} intensity={0.45} />
-          {modelPath ? <DroidModel path={modelPath} /> : null}
+          {modelPath ? <DroidModel motion={motion} path={modelPath} variant={variant} /> : null}
           <ContactShadows
             position={[0, -1.7, 0]}
             opacity={0.18}

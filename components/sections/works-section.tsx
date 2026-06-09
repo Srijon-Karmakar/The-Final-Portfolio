@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DroidScene } from "@/components/droid-scene";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -146,7 +147,51 @@ const DESIGN_PROJECTS: DesignProject[] = [
   },
 ];
 
+interface TechItem {
+  name: string;
+  icon: string;
+  category: "language" | "framework" | "other";
+}
+
+const TECH_STACK: TechItem[] = [
+  { name: "JavaScript", icon: "javascript/javascript-original", category: "language" },
+  { name: "TypeScript", icon: "typescript/typescript-original", category: "language" },
+  { name: "Python", icon: "python/python-original", category: "language" },
+  { name: "C++", icon: "cplusplus/cplusplus-original", category: "language" },
+  { name: "HTML5", icon: "html5/html5-original", category: "language" },
+  { name: "CSS3", icon: "css3/css3-original", category: "language" },
+  { name: "React", icon: "react/react-original", category: "framework" },
+  { name: "Next.js", icon: "nextjs/nextjs-original", category: "framework" },
+  { name: "Node.js", icon: "nodejs/nodejs-original", category: "framework" },
+  { name: "Django", icon: "django/django-plain", category: "framework" },
+  { name: "Tailwind", icon: "tailwindcss/tailwindcss-original", category: "framework" },
+  { name: "Express", icon: "express/express-original", category: "framework" },
+  { name: "Three.js", icon: "threejs/threejs-original", category: "other" },
+  { name: "Supabase", icon: "supabase/supabase-original", category: "other" },
+  { name: "Blender", icon: "blender/blender-original", category: "other" },
+  { name: "Git", icon: "git/git-original", category: "other" },
+  { name: "GitHub", icon: "github/github-original", category: "other" },
+  { name: "Figma", icon: "figma/figma-original", category: "other" },
+  { name: "Docker", icon: "docker/docker-original", category: "other" },
+  { name: "PostgreSQL", icon: "postgresql/postgresql-original", category: "other" },
+  { name: "MongoDB", icon: "mongodb/mongodb-original", category: "other" },
+  { name: "VS Code", icon: "vscode/vscode-original", category: "other" },
+];
+
+const DEVICON_BASE = "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons";
+
 const DESIGN_TITLE = "Design Works";
+const ABOUT_SUBTITLE_LINES = [
+  "Engineer by instinct,",
+  "3D designer by hobby.",
+];
+const ABOUT_PARAGRAPHS = [
+  "I am Srijon Karmakar, a Full-Stack Developer focused on building modern web applications and digital products, with a strong foundation in Computer Science.",
+  "My core skills span React, Next.js, Node.js, Python, and cloud-based systems, helping me turn ideas into scalable, user-centric solutions.",
+  "From ERP platforms and online testing systems to interactive web experiences, I enjoy combining technical expertise, problem-solving, and creativity to deliver products that create real value.",
+];
+const ABOUT_PARAGRAPH_TEXT = ABOUT_PARAGRAPHS.join(" ");
+const ABOUT_PARAGRAPH_WORDS = ABOUT_PARAGRAPH_TEXT.split(" ");
 
 export function WorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -158,8 +203,19 @@ export function WorksSection() {
   const designLetterRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const cartoonRef = useRef<HTMLImageElement>(null);
   const expandBoxRef = useRef<HTMLDivElement>(null);
+  const modelStageRef = useRef<HTMLDivElement>(null);
+  const modelWrapRef = useRef<HTMLDivElement>(null);
+  const aboutTitleWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const aboutSubtitleRef = useRef<HTMLParagraphElement>(null);
+  const aboutParagraphRef = useRef<HTMLDivElement>(null);
+  const aboutParagraphWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const popupRef = useRef<HTMLDivElement>(null);
   const popupBgRef = useRef<HTMLDivElement>(null);
+  const crossOverlayRef = useRef<HTMLDivElement>(null);
+  const crossGroupRef = useRef<SVGGElement>(null);
+  const toolsTitleWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const techItemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const droidMotionRef = useRef({ drift: 0, spin: 0 });
 
   const [activeProject, setActiveProject] = useState<Project | null>(null);
 
@@ -204,6 +260,17 @@ export function WorksSection() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (!containerRef.current) return;
+
+      const aboutParagraphWords = aboutParagraphWordRefs.current.filter(
+        (el): el is HTMLSpanElement => Boolean(el)
+      );
+      if (aboutParagraphWords.length > 0) {
+        gsap.set(aboutParagraphWords, { opacity: 0.1 });
+        gsap.set(aboutParagraphWords[0], { opacity: 1 });
+        if (aboutParagraphWords[1]) {
+          gsap.set(aboutParagraphWords[1], { opacity: 0.4 });
+        }
+      }
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -312,6 +379,205 @@ export function WorksSection() {
         },
         184
       );
+
+      // Phase 9: Fade the panel to white while the droid rises into frame.
+      tl.to(
+        expandBoxRef.current,
+        {
+          backgroundColor: "#ffffff",
+          duration: 16,
+          ease: "power2.inOut",
+        },
+        204
+      );
+      tl.fromTo(
+        modelStageRef.current,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 10, ease: "power2.out" },
+        206
+      );
+      const aboutTitleWords = aboutTitleWordRefs.current.filter(
+        (el): el is HTMLSpanElement => Boolean(el)
+      );
+      if (aboutTitleWords.length > 0) {
+        tl.fromTo(
+          aboutTitleWords,
+          { autoAlpha: 0, y: 42 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 8,
+            stagger: 4,
+            ease: "power2.out",
+          },
+          208
+        );
+      }
+      tl.fromTo(
+        aboutSubtitleRef.current,
+        { autoAlpha: 0, x: -80 },
+        {
+          autoAlpha: 1,
+          x: 0,
+          duration: 12,
+          ease: "power3.out",
+        },
+        218
+      );
+      tl.set(
+        aboutParagraphRef.current,
+        { autoAlpha: 1 },
+        228
+      );
+      tl.to(
+        modelWrapRef.current,
+        {
+          xPercent: 24,
+          duration: 14,
+          ease: "power3.inOut",
+        },
+        228
+      );
+      if (aboutParagraphWords.length > 1) {
+        tl.to(
+          aboutParagraphWords.slice(1),
+          {
+            opacity: 1,
+            duration: 0.45,
+            stagger: 0.45,
+            ease: "none",
+          },
+          228
+        );
+      }
+      tl.fromTo(
+        modelWrapRef.current,
+        { autoAlpha: 0, y: "42vh" },
+        { autoAlpha: 1, y: "0vh", duration: 16, ease: "power3.out" },
+        206
+      );
+
+      // Phase 10: Next scrolls wake up the model motion.
+      tl.to(
+        droidMotionRef.current,
+        {
+          spin: 0.9,
+          duration: 26,
+          ease: "none",
+        },
+        224
+      );
+
+      // Phase 11: Later scrolls drift the model slightly while it keeps floating.
+      tl.to(
+        modelWrapRef.current,
+        {
+          xPercent: 28,
+          y: "-2vh",
+          duration: 14,
+          ease: "power2.inOut",
+        },
+        236
+      );
+      tl.to(
+        droidMotionRef.current,
+        {
+          drift: 1,
+          spin: 1.8,
+          duration: 18,
+          ease: "sine.inOut",
+        },
+        236
+      );
+
+      // Phase 12: Fade out model stage at the end.
+      tl.to(
+        modelStageRef.current,
+        {
+          autoAlpha: 0,
+          duration: 8,
+          ease: "power2.inOut",
+        },
+        270
+      );
+
+      // Phase 13-14: Cross reveal transition.
+      const crossEl = crossGroupRef.current;
+      if (crossOverlayRef.current && crossEl) {
+        const crossG = crossEl;
+        const crossProxy = { scale: 0.1, y: 80 };
+
+        function applyCrossTransform() {
+          crossG.setAttribute(
+            "transform",
+            `translate(50, ${50 + crossProxy.y}) scale(${crossProxy.scale}) translate(-50, -50)`
+          );
+        }
+
+        applyCrossTransform();
+
+        // Show overlay
+        tl.to(
+          crossOverlayRef.current,
+          { autoAlpha: 1, duration: 1 },
+          278
+        );
+
+        // Phase 13: Cross slides up from below into center
+        tl.to(crossProxy, {
+          y: 0,
+          duration: 40,
+          ease: "power3.out",
+          onUpdate: applyCrossTransform,
+        }, 278);
+
+        // Phase 14: Cross expands to fill viewport
+        tl.to(crossProxy, {
+          scale: 20,
+          duration: 60,
+          ease: "power3.inOut",
+          onUpdate: applyCrossTransform,
+        }, 318);
+
+        // Phase 15: Tools title appears word by word
+        const toolsWords = toolsTitleWordRefs.current.filter(
+          (el): el is HTMLSpanElement => Boolean(el)
+        );
+        if (toolsWords.length > 0) {
+          tl.fromTo(
+            toolsWords,
+            { autoAlpha: 0, y: 36 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 4,
+              stagger: 1.5,
+              ease: "power3.out",
+            },
+            354
+          );
+        }
+
+        // Phase 16: Tech items appear with stagger
+        const techItems = techItemRefs.current.filter(
+          (el): el is HTMLDivElement => Boolean(el)
+        );
+        if (techItems.length > 0) {
+          tl.fromTo(
+            techItems,
+            { autoAlpha: 0, y: 30, scale: 0.85 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 3,
+              stagger: 0.8,
+              ease: "power2.out",
+            },
+            362
+          );
+        }
+      }
     }, containerRef);
 
     return () => ctx.revert();
@@ -382,8 +648,126 @@ export function WorksSection() {
                 loading="lazy"
               />
 
-              <div ref={expandBoxRef} className="design-expand-box" aria-hidden="true" />
+              <div ref={expandBoxRef} className="design-expand-box" aria-hidden="true">
+                <div ref={modelStageRef} className="design-model-stage">
+                  <h2 className="about-title" aria-label="ABOUT ME">
+                    {["ABOUT", "ME"].map((word, i) => (
+                      <span
+                        key={word}
+                        ref={(el) => { aboutTitleWordRefs.current[i] = el; }}
+                        className="about-title-word"
+                      >
+                        {word}
+                      </span>
+                    ))}
+                  </h2>
+                  <p ref={aboutSubtitleRef} className="about-subtitle" aria-label={ABOUT_SUBTITLE_LINES.join(" ")}>
+                    {ABOUT_SUBTITLE_LINES.map((line) => (
+                      <span key={line} className="about-subtitle-line">
+                        {line}
+                      </span>
+                    ))}
+                  </p>
+                  <div ref={aboutParagraphRef} className="about-paragraph" aria-label={ABOUT_PARAGRAPH_TEXT}>
+                    {(() => {
+                      let wordIndex = 0;
+
+                      return ABOUT_PARAGRAPHS.map((paragraph, paragraphIndex) => {
+                        const words = paragraph.split(" ");
+
+                        return (
+                          <p key={`paragraph-${paragraphIndex}`} className="about-paragraph-block">
+                            {words.map((word, wordInParagraphIndex) => {
+                              const currentWordIndex = wordIndex;
+                              wordIndex += 1;
+
+                              return (
+                                <Fragment key={`${word}-${paragraphIndex}-${wordInParagraphIndex}`}>
+                                  <span
+                                    ref={(el) => { aboutParagraphWordRefs.current[currentWordIndex] = el; }}
+                                    className="about-paragraph-word"
+                                  >
+                                    {word}
+                                  </span>
+                                  {wordInParagraphIndex < words.length - 1 ? " " : ""}
+                                </Fragment>
+                              );
+                            })}
+                          </p>
+                        );
+                      });
+                    })()}
+                  </div>
+                  <div ref={modelWrapRef} className="design-model-wrap">
+                    <DroidScene
+                      className="design-model-canvas"
+                      motion={droidMotionRef.current}
+                      variant="showcase"
+                      visible
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Cross reveal overlay */}
+          <div ref={crossOverlayRef} className="works-cross-overlay" aria-hidden="true">
+            <div className="works-cross-bg">
+              <div className="tools-title-wrap">
+                <span
+                  ref={(el) => { toolsTitleWordRefs.current[0] = el; }}
+                  className="tools-title-word"
+                >
+                  Tools &amp; Technologies
+                </span>
+                <span
+                  ref={(el) => { toolsTitleWordRefs.current[1] = el; }}
+                  className="tools-title-word tools-title-word--small"
+                >
+                  i use
+                </span>
+              </div>
+
+              <div className="tech-grid">
+                {TECH_STACK.map((tech, i) => (
+                  <div
+                    key={tech.name}
+                    ref={(el) => { techItemRefs.current[i] = el; }}
+                    className="tech-item"
+                  >
+                    <img
+                      className="tech-icon"
+                      src={`${DEVICON_BASE}/${tech.icon}.svg`}
+                      alt={tech.name}
+                      loading="lazy"
+                    />
+                    <span className="tech-label">{tech.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <svg
+              className="works-cross-svg"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="xMidYMid slice"
+            >
+              <defs>
+                <mask id="works-cross-mask">
+                  <rect width="100" height="100" fill="white" />
+                  <g ref={crossGroupRef}>
+                    <rect x="35" y="5" width="30" height="90" fill="black" />
+                    <rect x="5" y="35" width="90" height="30" fill="black" />
+                  </g>
+                </mask>
+              </defs>
+              <rect
+                width="100"
+                height="100"
+                fill="#ffffff"
+                mask="url(#works-cross-mask)"
+              />
+            </svg>
           </div>
         </div>
       </section>
