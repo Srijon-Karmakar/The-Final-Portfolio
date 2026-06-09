@@ -12,13 +12,13 @@ export function HeroSection() {
   const maskSvgRef = useRef<SVGSVGElement>(null);
   const whiteLayerRef = useRef<HTMLDivElement>(null);
   const subtextRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const circleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const textEl = maskSvgRef.current?.querySelector("text");
       if (!textEl || !maskSvgRef.current) return;
 
-      // Measure the "o" in "srijon"
       const charIndex = 4;
       let cx: number, cy: number;
 
@@ -44,46 +44,65 @@ export function HeroSection() {
         },
       });
 
-      // Phase 1 (0-45): Dive into the "o"
+      // Phase 1 (0-30): Dive into the "o"
       tl.to(
         maskSvgRef.current,
         {
           attr: { viewBox: finalViewBox },
-          duration: 45,
+          duration: 30,
           ease: "power3.in",
         },
         0
       );
 
-      // Phase 2 (35-48): Black layer fades out
+      // Phase 2 (24-32): Black layer fades out
       tl.to(
         blackLayerRef.current,
         {
           opacity: 0,
-          duration: 13,
+          duration: 8,
           ease: "power2.in",
         },
-        35
+        24
       );
 
-      // Phase 3 (48-56): White layer content fades in
+      // Phase 3 (32-38): White layer content fades in
       tl.fromTo(
         whiteLayerRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 8, ease: "power2.out" },
-        48
+        { opacity: 1, duration: 6, ease: "power2.out" },
+        32
       );
 
-      // Phase 4 (60-90): Subtexts stagger in
+      // Phase 4 (38-56): Subtexts stagger in
       subtextRefs.current.forEach((el, i) => {
         if (!el) return;
         tl.fromTo(
           el,
           { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 8, ease: "power2.out" },
-          60 + i * 10
+          { opacity: 1, y: 0, duration: 6, ease: "power2.out" },
+          38 + i * 6
         );
       });
+
+      // Phase 5 (58-72): Circle slides up from bottom to center-right
+      tl.fromTo(
+        circleRef.current,
+        { y: "100vh" },
+        { y: "0%", duration: 14, ease: "power2.out" },
+        58
+      );
+
+      // Phase 6 (78-100): Circle expands to fill screen
+      tl.to(
+        circleRef.current,
+        {
+          scale: 15,
+          duration: 22,
+          ease: "power3.in",
+        },
+        78
+      );
     }, containerRef);
 
     return () => ctx.revert();
@@ -134,6 +153,9 @@ export function HeroSection() {
             ))}
           </div>
         </div>
+
+        {/* Lavender circle */}
+        <div ref={circleRef} className="circle-orb" />
       </div>
     </section>
   );

@@ -20,6 +20,7 @@
   --black: #0d0d0d;
   --white: #ffffff;
   --gray: #9b9b97;
+  --orange: #f97316;
 }
 
 *,
@@ -35,7 +36,7 @@ html {
 }
 
 body {
-  background: var(--black);
+  background: var(--white);
   color: var(--black);
   font-family: var(--font-manrope), "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -51,7 +52,7 @@ a {
 /* ── Hero Container ── */
 .hero-container {
   position: relative;
-  height: 300vh;
+  height: 500vh;
 }
 
 .hero-sticky {
@@ -127,6 +128,20 @@ a {
   opacity: 0;
 }
 
+/* ── Circle Orb ── */
+.circle-orb {
+  position: absolute;
+  z-index: 5;
+  right: 12vw;
+  top: 50%;
+  margin-top: -15vmin;
+  width: 30vmin;
+  height: 30vmin;
+  border-radius: 50%;
+  background: var(--orange);
+  will-change: transform;
+}
+
 /* ── Tablet ── */
 @media (min-width: 768px) {
   .hero-title {
@@ -144,6 +159,13 @@ a {
 
   .hero-subtext {
     font-size: 2.4vw;
+  }
+
+  .circle-orb {
+    right: 15vw;
+    margin-top: -14vmin;
+    width: 28vmin;
+    height: 28vmin;
   }
 }
 
@@ -164,5 +186,310 @@ a {
 
   .hero-subtext {
     font-size: 1.6vw;
+  }
+
+  .circle-orb {
+    right: 18vw;
+    margin-top: -12.5vmin;
+    width: 25vmin;
+    height: 25vmin;
+  }
+}
+
+/* ══════════════════════════════════════
+   Works Section
+   ══════════════════════════════════════ */
+
+.works-container {
+  position: relative;
+  height: 600vh;
+}
+
+.works-sticky {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.works-slide {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.works-orange {
+  background: var(--orange);
+  display: flex;
+  flex-direction: column;
+  padding: 5vw;
+  overflow: hidden;
+}
+
+.works-title {
+  font-family: "Halenoir", var(--font-manrope), sans-serif;
+  font-weight: 500;
+  color: var(--white);
+  font-size: 14vw;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  margin-bottom: 6vw;
+  flex-shrink: 0;
+}
+
+.works-white {
+  background: var(--white);
+}
+
+.works-white-inner {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Bento Grid ── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.bento-item {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  opacity: 0;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bento-item:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.bento-item:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+.bento-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bento-item:hover img {
+  transform: scale(1.08);
+}
+
+/* Hover overlay */
+.bento-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, transparent 60%);
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.bento-item:hover .bento-overlay {
+  opacity: 1;
+}
+
+.bento-overlay-title {
+  color: var(--white);
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 700;
+  font-size: 3.5vw;
+  letter-spacing: -0.01em;
+}
+
+/* ── Tablet ── */
+@media (min-width: 768px) {
+  .works-title {
+    font-size: 10vw;
+    margin-bottom: 3vw;
+  }
+
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .bento-overlay-title {
+    font-size: 1.6vw;
+  }
+}
+
+/* ── Desktop ── */
+@media (min-width: 1024px) {
+  .works-title {
+    font-size: 7vw;
+    margin-bottom: 2vw;
+  }
+
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .bento-item { border-radius: 14px; }
+
+  .bento-overlay {
+    padding: 16px;
+  }
+
+  .bento-overlay-title {
+    font-size: 1.1vw;
+  }
+}
+
+/* ══════════════════════════════════════
+   Popup
+   ══════════════════════════════════════ */
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.popup {
+  position: relative;
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.3);
+}
+
+.popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.popup-close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.popup-img {
+  width: 100%;
+  height: 44vw;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.popup-body {
+  padding: 20px;
+}
+
+.popup-title {
+  font-family: "Halenoir", var(--font-manrope), sans-serif;
+  font-weight: 500;
+  font-size: 6vw;
+  color: var(--black);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.popup-desc {
+  font-family: var(--font-manrope), sans-serif;
+  font-size: 3.6vw;
+  color: var(--gray);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.popup-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 600;
+  font-size: 3.4vw;
+  letter-spacing: 0.01em;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              background 0.3s ease;
+}
+
+.popup-cta:hover {
+  transform: scale(1.04);
+  background: #222;
+}
+
+/* ── Popup Tablet ── */
+@media (min-width: 768px) {
+  .popup-title {
+    font-size: 2.4vw;
+  }
+
+  .popup-desc {
+    font-size: 1.5vw;
+  }
+
+  .popup-cta {
+    font-size: 1.2vw;
+  }
+}
+
+/* ── Popup Desktop ── */
+@media (min-width: 1024px) {
+  .popup {
+    max-width: 560px;
+    border-radius: 20px;
+  }
+
+  .popup-body {
+    padding: 28px;
+  }
+
+  .popup-title {
+    font-size: 1.8vw;
+    margin-bottom: 10px;
+  }
+
+  .popup-desc {
+    font-size: 1vw;
+    margin-bottom: 24px;
+  }
+
+  .popup-cta {
+    font-size: 0.9vw;
+    padding: 14px 28px;
   }
 }
