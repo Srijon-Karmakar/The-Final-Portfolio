@@ -1,12 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-
-const DroidScene = dynamic(
-  () => import("@/components/droid-scene").then((module) => module.DroidScene),
-  { ssr: false }
-);
 
 export function HeroSection() {
   const [phase, setPhase] = useState<"loading" | "reveal" | "done">("loading");
@@ -61,8 +55,6 @@ export function HeroSection() {
       <div className="hero__bigtext hero__bigtext--ghost" aria-hidden="true">
         <span className="bigtext__word">engineer</span>
       </div>
-
-      <DroidScene visible={phase === "reveal" || phase === "done"} />
 
       <div className="hero__tagline">
         <p>
