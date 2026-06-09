@@ -214,6 +214,7 @@ export function WorksSection() {
   const crossOverlayRef = useRef<HTMLDivElement>(null);
   const crossGroupRef = useRef<SVGGElement>(null);
   const toolsTitleWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const techGridRef = useRef<HTMLDivElement>(null);
   const techItemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const droidMotionRef = useRef({ drift: 0, spin: 0 });
 
@@ -504,17 +505,12 @@ export function WorksSection() {
       // Phase 13-14: Cross reveal transition.
       const crossEl = crossGroupRef.current;
       if (crossOverlayRef.current && crossEl) {
-        const crossG = crossEl;
-        const crossProxy = { scale: 0.1, y: 80 };
-
-        function applyCrossTransform() {
-          crossG.setAttribute(
-            "transform",
-            `translate(50, ${50 + crossProxy.y}) scale(${crossProxy.scale}) translate(-50, -50)`
-          );
-        }
-
-        applyCrossTransform();
+        gsap.set(crossEl, {
+          scale: 0.1,
+          y: 80,
+          transformOrigin: "50% 50%",
+          transformBox: "fill-box",
+        });
 
         // Show overlay
         tl.to(
@@ -524,20 +520,26 @@ export function WorksSection() {
         );
 
         // Phase 13: Cross slides up from below into center
-        tl.to(crossProxy, {
-          y: 0,
-          duration: 40,
-          ease: "power3.out",
-          onUpdate: applyCrossTransform,
-        }, 278);
+        tl.to(
+          crossEl,
+          {
+            y: 0,
+            duration: 40,
+            ease: "power3.out",
+          },
+          278
+        );
 
         // Phase 14: Cross expands to fill viewport
-        tl.to(crossProxy, {
-          scale: 20,
-          duration: 60,
-          ease: "power3.inOut",
-          onUpdate: applyCrossTransform,
-        }, 318);
+        tl.to(
+          crossEl,
+          {
+            scale: 20,
+            duration: 60,
+            ease: "power3.inOut",
+          },
+          318
+        );
 
         // Phase 15: Tools title appears word by word
         const toolsWords = toolsTitleWordRefs.current.filter(
@@ -562,16 +564,21 @@ export function WorksSection() {
         const techItems = techItemRefs.current.filter(
           (el): el is HTMLDivElement => Boolean(el)
         );
+        tl.fromTo(
+          techGridRef.current,
+          { autoAlpha: 0, y: 24 },
+          { autoAlpha: 1, y: 0, duration: 8, ease: "power2.out" },
+          360
+        );
         if (techItems.length > 0) {
           tl.fromTo(
             techItems,
-            { autoAlpha: 0, y: 30, scale: 0.85 },
+            { autoAlpha: 0, y: 18 },
             {
               autoAlpha: 1,
               y: 0,
-              scale: 1,
-              duration: 3,
-              stagger: 0.8,
+              duration: 2,
+              stagger: 0.16,
               ease: "power2.out",
             },
             362
@@ -729,7 +736,7 @@ export function WorksSection() {
                 </span>
               </div>
 
-              <div className="tech-grid">
+              <div ref={techGridRef} className="tech-grid">
                 {TECH_STACK.map((tech, i) => (
                   <div
                     key={tech.name}
