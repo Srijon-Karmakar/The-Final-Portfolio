@@ -247,7 +247,10 @@ export function WorksSection() {
   const popupRef = useRef<HTMLDivElement>(null);
   const popupBgRef = useRef<HTMLDivElement>(null);
   const crossOverlayRef = useRef<HTMLDivElement>(null);
+  const crossPlusRef = useRef<HTMLDivElement>(null);
   const crossGroupRef = useRef<SVGGElement>(null);
+  const crossVisibleGroupRef = useRef<SVGGElement>(null);
+  const crossMaskRectRef = useRef<SVGRectElement>(null);
   const careerTitleRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const careerSummaryRef = useRef<HTMLParagraphElement>(null);
   const careerStatsGridRef = useRef<HTMLDivElement>(null);
@@ -259,7 +262,6 @@ export function WorksSection() {
 
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [showBottomShowcase, setShowBottomShowcase] = useState(false);
-  const [useLightReveal, setUseLightReveal] = useState(false);
 
   const openPopup = (project: Project) => {
     setActiveProject(project);
@@ -283,20 +285,6 @@ export function WorksSection() {
       onComplete: () => setActiveProject(null),
     });
   };
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
-    const updateRevealMode = () => {
-      setUseLightReveal(mediaQuery.matches);
-    };
-
-    updateRevealMode();
-    mediaQuery.addEventListener("change", updateRevealMode);
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateRevealMode);
-    };
-  }, []);
 
   useEffect(() => {
     if (activeProject && popupRef.current && popupBgRef.current) {
@@ -579,113 +567,134 @@ export function WorksSection() {
 
       // Phase 13-14: Cross reveal transition.
       const crossEl = crossGroupRef.current;
-      if (crossOverlayRef.current && crossEl) {
-        gsap.set(crossEl, {
-          scale: 0.1,
-          y: 80,
-          transformOrigin: "50% 50%",
-          transformBox: "fill-box",
-        });
+      const crossVisibleEl = crossVisibleGroupRef.current;
+      const crossPlusEl = crossPlusRef.current;
+      if (crossOverlayRef.current) {
+        if (crossEl && crossVisibleEl) {
+          gsap.set([crossEl, crossVisibleEl], {
+            scale: 0.1,
+            y: 80,
+            x: 0,
+            svgOrigin: "50 50",
+          });
+        }
+        if (crossPlusEl) {
+          gsap.set(crossPlusEl, {
+            scale: 0.1,
+            y: 80,
+            transformOrigin: "50% 50%",
+          });
+        }
 
-        // Show overlay
         tl.to(
           crossOverlayRef.current,
           { autoAlpha: 1, duration: 1 },
           278
         );
 
-        // Phase 13: Cross slides up from below into center
-        tl.to(
-          crossEl,
-          {
-            y: 0,
-            duration: 40,
-            ease: "power3.out",
-          },
-          278
-        );
-
-        // Phase 14: Cross expands to fill viewport
-        tl.to(
-          crossEl,
-          {
-            scale: 20,
-            duration: 60,
-            ease: "power3.inOut",
-          },
-          318
-        );
-        if (careerTitleWords.length > 0) {
-          tl.fromTo(
-            careerTitleWords,
-            { autoAlpha: 0, y: 44 },
+        if (crossEl && crossVisibleEl && crossPlusEl) {
+          tl.to(
+            [crossEl, crossVisibleEl, crossPlusEl],
             {
-              autoAlpha: 1,
               y: 0,
-              duration: 6,
-              stagger: 2.5,
+              duration: 40,
               ease: "power3.out",
             },
-            352
+            278
           );
-        }
-        tl.fromTo(
-          careerSummaryRef.current,
-          { autoAlpha: 0, y: 20 },
-          { autoAlpha: 1, y: 0, duration: 8, ease: "power2.out" },
-          360
-        );
-        tl.fromTo(
-          careerStatsGridRef.current,
-          { autoAlpha: 0, y: 36 },
-          { autoAlpha: 1, y: 0, duration: 8, ease: "power2.out" },
-          370
-        );
-        if (careerStatCards.length > 0) {
-          tl.fromTo(
-            careerStatCards,
-            { autoAlpha: 0, y: 28, scale: 0.96 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: 4,
-              stagger: 1.5,
-              ease: "power2.out",
-            },
-            372
-          );
-        }
-        CAREER_STATS.forEach((stat, i) => {
-          const el = careerStatValueRefs.current[i];
-          if (!el) return;
 
-          const counter = { value: 0 };
           tl.to(
-            counter,
+            [crossEl, crossVisibleEl, crossPlusEl],
             {
-              value: stat.value,
-              duration: 10,
-              ease: "power2.out",
-              snap: stat.decimals ? undefined : { value: 1 },
-              onUpdate: () => {
-                el.textContent = formatCareerStatValue(stat, counter.value);
-              },
+              scale: 20,
+              duration: 60,
+              ease: "power3.inOut",
             },
-            376 + i * 1.8
+            318
           );
-        });
-        tl.fromTo(
-          bottomRevealRef.current,
-          { yPercent: 100 },
+        }
+
+        tl.to(
+          crossMaskRectRef.current,
           {
-            yPercent: 0,
-            duration: 24,
-            ease: "power3.inOut",
+            autoAlpha: 0,
+            duration: 6,
+            ease: "power2.inOut",
           },
-          398
+          348
         );
       }
+
+      if (careerTitleWords.length > 0) {
+        tl.fromTo(
+          careerTitleWords,
+          { autoAlpha: 0, y: 44 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 6,
+            stagger: 2.5,
+            ease: "power3.out",
+          },
+          352
+        );
+      }
+      tl.fromTo(
+        careerSummaryRef.current,
+        { autoAlpha: 0, y: 20 },
+        { autoAlpha: 1, y: 0, duration: 8, ease: "power2.out" },
+        360
+      );
+      tl.fromTo(
+        careerStatsGridRef.current,
+        { autoAlpha: 0, y: 36 },
+        { autoAlpha: 1, y: 0, duration: 8, ease: "power2.out" },
+        370
+      );
+      if (careerStatCards.length > 0) {
+        tl.fromTo(
+          careerStatCards,
+          { autoAlpha: 0, y: 28, scale: 0.96 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 4,
+            stagger: 1.5,
+            ease: "power2.out",
+          },
+          372
+        );
+      }
+      CAREER_STATS.forEach((stat, i) => {
+        const el = careerStatValueRefs.current[i];
+        if (!el) return;
+
+        const counter = { value: 0 };
+        tl.to(
+          counter,
+          {
+            value: stat.value,
+            duration: 10,
+            ease: "power2.out",
+            snap: stat.decimals ? undefined : { value: 1 },
+            onUpdate: () => {
+              el.textContent = formatCareerStatValue(stat, counter.value);
+            },
+          },
+          376 + i * 1.8
+        );
+      });
+      tl.fromTo(
+        bottomRevealRef.current,
+        { yPercent: 100 },
+        {
+          yPercent: 0,
+          duration: 24,
+          ease: "power3.inOut",
+        },
+        398
+      );
     }, containerRef);
 
     return () => ctx.revert();
@@ -822,6 +831,7 @@ export function WorksSection() {
           {/* Cross reveal overlay */}
           <div ref={crossOverlayRef} className="works-cross-overlay">
             <div className="works-cross-bg" />
+            <div ref={crossPlusRef} className="works-cross-plus" aria-hidden="true" />
             <div className="career-glance-wrap">
               <h2 className="career-title" aria-label="Career at a glance">
                 {CAREER_TITLE_LINES.map((line, i) => (
@@ -871,11 +881,16 @@ export function WorksSection() {
                 </mask>
               </defs>
               <rect
+                ref={crossMaskRectRef}
                 width="100"
                 height="100"
                 fill="#ffffff"
                 mask="url(#works-cross-mask)"
               />
+              <g ref={crossVisibleGroupRef}>
+                <rect x="35" y="5" width="30" height="90" fill="#f97316" />
+                <rect x="5" y="35" width="90" height="30" fill="#f97316" />
+              </g>
             </svg>
           </div>
 
@@ -883,7 +898,7 @@ export function WorksSection() {
             ref={bottomRevealRef}
             className="works-slide works-bottom-reveal"
           >
-            {showBottomShowcase && !useLightReveal ? (
+            {showBottomShowcase ? (
               <div className="works-bottom-reveal-bg">
                 <MagnetLines
                   rows={18}

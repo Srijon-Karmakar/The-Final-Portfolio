@@ -349,7 +349,9 @@ function makeVertexArray(
 }
 
 function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
-  const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+  const isCompact = window.matchMedia("(max-width: 900px)").matches;
+  const dprCap = isCompact ? 1.1 : 1.5;
+  const dpr = Math.min(dprCap, window.devicePixelRatio || 1);
   const displayWidth = Math.round(canvas.clientWidth * dpr);
   const displayHeight = Math.round(canvas.clientHeight * dpr);
   const needResize = canvas.width !== displayWidth || canvas.height !== displayHeight;
@@ -719,8 +721,9 @@ class InfiniteGridMenu {
   }
 
   private init(onInit?: InitCallback) {
+    const isCompact = window.matchMedia("(max-width: 900px)").matches;
     const gl = this.canvas.getContext("webgl2", {
-      antialias: true,
+      antialias: !isCompact,
       alpha: true,
       powerPreference: "high-performance",
     });
@@ -755,7 +758,7 @@ class InfiniteGridMenu {
       uAtlasSize: gl.getUniformLocation(this.discProgram, "uAtlasSize"),
     };
 
-    this.discGeo = new DiscGeometry(40, 1);
+    this.discGeo = new DiscGeometry(isCompact ? 28 : 40, 1);
     this.discBuffers = this.discGeo.data;
     this.discVAO = makeVertexArray(
       gl,
@@ -767,7 +770,7 @@ class InfiniteGridMenu {
     );
 
     this.icoGeo = new IcosahedronGeometry();
-    this.icoGeo.subdivide(1).spherize(this.sphereRadius);
+    this.icoGeo.subdivide(isCompact ? 0 : 1).spherize(this.sphereRadius);
     this.instancePositions = this.icoGeo.vertices.map((v) => v.position);
     this.discInstanceCount = this.icoGeo.vertices.length;
     this.initDiscInstances(this.discInstanceCount);
@@ -791,7 +794,8 @@ class InfiniteGridMenu {
     const itemCount = Math.max(1, this.items.length);
     this.atlasSize = Math.ceil(Math.sqrt(itemCount));
     const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE) as number;
-    const desiredCellSize = window.innerWidth <= 1200 ? 768 : 1024;
+    const isCompact = window.matchMedia("(max-width: 900px)").matches;
+    const desiredCellSize = isCompact ? 640 : window.innerWidth <= 1200 ? 768 : 1024;
     const cellSize = Math.max(512, Math.min(desiredCellSize, Math.floor(maxTextureSize / this.atlasSize)));
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -1041,27 +1045,23 @@ export function InfiniteMenu({ items = [], scale = 1.0 }: InfiniteMenuProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null) as MutableRefObject<HTMLCanvasElement | null>;
   const [activeItem, setActiveItem] = useState<InfiniteMenuItem | null>(null);
   const [isMoving, setIsMoving] = useState(false);
-  const [useLiteMode, setUseLiteMode] = useState(false);
+  const [isCompactLayout, setIsCompactLayout] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
-    const updateLiteMode = () => {
-      setUseLiteMode(mediaQuery.matches);
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const updateLayoutMode = () => {
+      setIsCompactLayout(mediaQuery.matches);
     };
 
-    updateLiteMode();
-    mediaQuery.addEventListener("change", updateLiteMode);
+    updateLayoutMode();
+    mediaQuery.addEventListener("change", updateLayoutMode);
 
     return () => {
-      mediaQuery.removeEventListener("change", updateLiteMode);
+      mediaQuery.removeEventListener("change", updateLayoutMode);
     };
   }, []);
 
   useEffect(() => {
-    if (useLiteMode) {
-      return;
-    }
-
     const canvas = canvasRef.current;
     let sketch: InfiniteGridMenu | null = null;
 
@@ -1077,7 +1077,7 @@ export function InfiniteMenu({ items = [], scale = 1.0 }: InfiniteMenuProps) {
         handleActiveItem,
         setIsMoving,
         (instance) => instance.run(),
-        scale
+        isCompactLayout ? 0.9 : scale
       );
     }
 
@@ -1092,36 +1092,7 @@ export function InfiniteMenu({ items = [], scale = 1.0 }: InfiniteMenuProps) {
       window.removeEventListener("resize", handleResize);
       sketch?.destroy();
     };
-  }, [menuItems, scale, useLiteMode]);
-
-  if (useLiteMode) {
-    return (
-      <div className="infinite-menu-fallback">
-        {menuItems.map((item) => (
-          <a
-            key={item.title}
-            href={item.link}
-            target={item.link.startsWith("http") ? "_blank" : undefined}
-            rel={item.link.startsWith("http") ? "noopener noreferrer" : undefined}
-            className="infinite-menu-fallback__card"
-          >
-            <div className="infinite-menu-fallback__image-wrap">
-              <img
-                className="infinite-menu-fallback__image"
-                src={item.image}
-                alt={item.title}
-                loading="lazy"
-              />
-            </div>
-            <div className="infinite-menu-fallback__body">
-              <h3 className="infinite-menu-fallback__title">{item.title}</h3>
-              <p className="infinite-menu-fallback__description">{item.description}</p>
-            </div>
-          </a>
-        ))}
-      </div>
-    );
-  }
+  }, [isCompactLayout, menuItems, scale]);
 
   const handleButtonClick = () => {
     if (!activeItem?.link) return;
