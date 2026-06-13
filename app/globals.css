@@ -243,6 +243,253 @@ a {
   background: var(--white);
 }
 
+.works-bottom-reveal {
+  z-index: 20;
+  background: var(--white);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.works-bottom-reveal-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.works-bottom-magnet-lines {
+  opacity: 0.95;
+}
+
+.works-bottom-reveal-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.infinite-menu {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.infinite-menu-fallback {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: min(1120px, 92vw);
+  margin: 0 auto;
+  padding: 16vh 0 2rem;
+}
+
+.infinite-menu-fallback__card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  color: inherit;
+  backdrop-filter: blur(10px);
+}
+
+.infinite-menu-fallback__image-wrap {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f4f4f4;
+}
+
+.infinite-menu-fallback__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.infinite-menu-fallback__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1rem 1.1rem;
+}
+
+.infinite-menu-fallback__title {
+  margin: 0;
+  font-family: "Halenoir", var(--font-manrope), sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: var(--black);
+}
+
+.infinite-menu-fallback__description {
+  margin: 0;
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.9rem, 1.4vw, 1rem);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: rgba(0, 0, 0, 0.68);
+}
+
+.infinite-menu__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  outline: none;
+}
+
+.infinite-menu__canvas:active {
+  cursor: grabbing;
+}
+
+.infinite-menu__title {
+  position: absolute;
+  left: 7vw;
+  top: 50%;
+  z-index: 2;
+  max-width: 6ch;
+  margin: 0;
+  transform: translateY(-50%);
+  font-family: "Halenoir", var(--font-manrope), sans-serif;
+  font-weight: 500;
+  font-size: clamp(2.8rem, 7vw, 6.4rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  color: var(--black);
+  pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.infinite-menu__description {
+  position: absolute;
+  right: 7vw;
+  top: 50%;
+  z-index: 2;
+  width: min(26ch, 24vw);
+  margin: 0;
+  transform: translateY(-50%);
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 600;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.infinite-menu__cta {
+  position: absolute;
+  left: 50%;
+  bottom: 3.4rem;
+  z-index: 3;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 4px solid var(--black);
+  border-radius: 999px;
+  background: var(--orange);
+  color: var(--black);
+  cursor: pointer;
+  transform: translateX(-50%);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.infinite-menu__cta-icon {
+  position: relative;
+  top: 1px;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.infinite-menu__title.is-hidden,
+.infinite-menu__description.is-hidden,
+.infinite-menu__cta.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.infinite-menu__title.is-hidden {
+  transform: translateY(-50%) translateX(4%);
+}
+
+.infinite-menu__description.is-hidden {
+  transform: translateY(-50%) translateX(-8%);
+}
+
+.infinite-menu__cta.is-hidden {
+  transform: translateX(-50%) translateY(24px) scale(0.9);
+}
+
+.infinite-menu__title.is-visible,
+.infinite-menu__description.is-visible,
+.infinite-menu__cta.is-visible {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .infinite-menu {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .infinite-menu__title {
+    left: 6vw;
+    top: 18vh;
+    max-width: 8ch;
+    transform: none;
+  }
+
+  .infinite-menu__title.is-hidden {
+    transform: translateX(4%);
+  }
+
+  .infinite-menu__description {
+    left: 6vw;
+    right: auto;
+    top: auto;
+    bottom: 8.5rem;
+    width: min(32ch, 78vw);
+    transform: none;
+  }
+
+  .infinite-menu__description.is-hidden {
+    transform: translateX(-8%);
+  }
+
+  .infinite-menu__cta {
+    bottom: 2rem;
+  }
+
+  .infinite-menu-fallback {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    padding: 12vh 4vw 2rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+  }
+
+  .infinite-menu-fallback__card {
+    flex: 0 0 min(78vw, 420px);
+    scroll-snap-align: center;
+  }
+}
+
 .works-white-inner {
   position: relative;
   width: 100%;
@@ -388,14 +635,14 @@ a {
 .about-title {
   position: absolute;
   top: 4vh;
-  left: 50%;
+  left: 5vw;
   z-index: 2;
-  transform: translateX(-50%);
+  transform: none;
   display: flex;
   gap: 0.18em;
   font-family: "Halenoir", var(--font-manrope), sans-serif;
   font-weight: 500;
-  font-size: clamp(5rem, 21vw, 12rem);
+  font-size: clamp(4.4rem, 18vw, 10.5rem);
   line-height: 0.9;
   letter-spacing: -0.04em;
   color: var(--gray-soft);
@@ -639,7 +886,8 @@ a {
 
   .about-title {
     top: 3vh;
-    font-size: clamp(6.6rem, 15vw, 11rem);
+    left: 5vw;
+    font-size: clamp(5.8rem, 13vw, 9.8rem);
   }
 
   .about-subtitle {
@@ -762,7 +1010,8 @@ a {
 
   .about-title {
     top: 2.5vh;
-    font-size: clamp(8rem, 13.5vw, 15rem);
+    left: 6vw;
+    font-size: clamp(7rem, 11.5vw, 13rem);
   }
 
   .about-subtitle {
@@ -874,7 +1123,7 @@ a {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: #adadad;
+  background: var(--orange);
 }
 
 .works-cross-svg {
@@ -887,139 +1136,105 @@ a {
   overflow: visible;
 }
 
-.tools-title-wrap {
+.career-glance-wrap {
   position: absolute;
-  top: 6vh;
-  left: 50%;
+  inset: 0;
   z-index: 3;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: max-content;
+  justify-content: flex-start;
+  padding: 7vh 5vw 8vh;
   text-align: center;
 }
 
-.tools-title-word {
+.career-title {
+  margin: 0;
+}
+
+.career-title-line {
   display: block;
   font-family: "Halenoir", var(--font-manrope), sans-serif;
   font-weight: 500;
-  font-size: clamp(2.8rem, 8vw, 10rem);
-  line-height: 0.92;
-  letter-spacing: -0.04em;
+  font-size: clamp(3.4rem, 9vw, 9.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.05em;
   color: var(--black);
-  white-space: nowrap;
   opacity: 0;
   visibility: hidden;
 }
 
-.tools-title-word--small {
-  font-size: clamp(1.4rem, 3.5vw, 3rem);
-  line-height: 1.2;
+.career-summary {
+  width: min(680px, 88vw);
+  margin: 1.6rem auto 0;
+  font-family: var(--font-manrope), sans-serif;
+  font-size: clamp(0.98rem, 1.8vw, 1.2rem);
+  line-height: 1.55;
   letter-spacing: -0.02em;
-  color: #555;
-  margin-top: 0.3em;
+  color: rgba(0, 0, 0, 0.68);
+  opacity: 0;
+  visibility: hidden;
 }
 
-.tech-grid {
-  position: absolute;
-  top: 32vh;
-  left: 50%;
-  z-index: 3;
-  transform: translateX(-50%);
-  pointer-events: auto;
+.career-stats-grid {
+  width: min(1080px, 88vw);
+  margin-top: 8vh;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  width: 88vw;
-  max-width: 720px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  opacity: 0;
+  visibility: hidden;
   will-change: transform, opacity;
 }
 
-.tech-item {
+.career-stat-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 6px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 170px;
+  padding: 1.5rem 1.35rem 1.25rem;
+  border-radius: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  text-align: left;
   opacity: 0;
   visibility: hidden;
-  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-  will-change: transform, opacity;
 }
 
-.tech-item:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
-.tech-icon {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  filter: brightness(0);
-  transition: filter 0.25s ease, transform 0.25s ease;
-}
-
-.tech-item:hover .tech-icon {
-  filter: none;
-  transform: scale(1.12);
-}
-
-.tech-label {
-  font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: clamp(0.6rem, 2.2vw, 0.82rem);
+.career-stat-value {
+  font-family: "Halenoir", var(--font-manrope), sans-serif;
+  font-weight: 500;
+  font-size: clamp(2.6rem, 6vw, 5.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
   color: var(--black);
-  text-align: center;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
+}
+
+.career-stat-label {
+  display: inline-block;
+  max-width: 15ch;
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.9rem, 1.9vw, 1.1rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: rgba(0, 0, 0, 0.72);
 }
 
 @media (min-width: 768px) {
-  .tech-grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
-    top: 30vh;
-    max-width: 860px;
+  .career-glance-wrap {
+    padding-top: 6vh;
   }
 
-  .tech-icon {
-    width: 40px;
-    height: 40px;
-  }
-
-  .tech-label {
-    font-size: clamp(0.7rem, 1.2vw, 0.88rem);
-  }
-}
-
-@media (min-width: 1024px) {
-  .tech-grid {
-    grid-template-columns: repeat(7, 1fr);
+  .career-stats-grid {
+    margin-top: 9vh;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
-    top: 28vh;
-    max-width: 960px;
-  }
-
-  .tech-item {
-    padding: 18px 8px;
-    border-radius: 16px;
-  }
-
-  .tech-icon {
-    width: 44px;
-    height: 44px;
-  }
-
-  .tech-label {
-    font-size: 0.82rem;
   }
 }
+
 
 /* ══════════════════════════════════════
    Popup

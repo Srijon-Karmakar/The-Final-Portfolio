@@ -1,11 +1,19 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Fragment, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DroidScene } from "@/components/droid-scene";
+import type { InfiniteMenuItem } from "@/components/infinite-menu";
+import { MagnetLines } from "@/components/magnet-lines";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const InfiniteMenu = dynamic(
+  () => import("@/components/infinite-menu").then((mod) => mod.InfiniteMenu),
+  { ssr: false }
+);
 
 interface Project {
   img: string;
@@ -18,6 +26,14 @@ interface DesignProject extends Project {
   circleClassName: string;
   appearAt: number;
 }
+
+interface CareerStat {
+  value: number;
+  label: string;
+  suffix?: string;
+  decimals?: number;
+}
+
 
 const ENGINEERING_PROJECTS: Project[] = [
   {
@@ -147,39 +163,6 @@ const DESIGN_PROJECTS: DesignProject[] = [
   },
 ];
 
-interface TechItem {
-  name: string;
-  icon: string;
-  category: "language" | "framework" | "other";
-}
-
-const TECH_STACK: TechItem[] = [
-  { name: "JavaScript", icon: "javascript/javascript-original", category: "language" },
-  { name: "TypeScript", icon: "typescript/typescript-original", category: "language" },
-  { name: "Python", icon: "python/python-original", category: "language" },
-  { name: "C++", icon: "cplusplus/cplusplus-original", category: "language" },
-  { name: "HTML5", icon: "html5/html5-original", category: "language" },
-  { name: "CSS3", icon: "css3/css3-original", category: "language" },
-  { name: "React", icon: "react/react-original", category: "framework" },
-  { name: "Next.js", icon: "nextjs/nextjs-original", category: "framework" },
-  { name: "Node.js", icon: "nodejs/nodejs-original", category: "framework" },
-  { name: "Django", icon: "django/django-plain", category: "framework" },
-  { name: "Tailwind", icon: "tailwindcss/tailwindcss-original", category: "framework" },
-  { name: "Express", icon: "express/express-original", category: "framework" },
-  { name: "Three.js", icon: "threejs/threejs-original", category: "other" },
-  { name: "Supabase", icon: "supabase/supabase-original", category: "other" },
-  { name: "Blender", icon: "blender/blender-original", category: "other" },
-  { name: "Git", icon: "git/git-original", category: "other" },
-  { name: "GitHub", icon: "github/github-original", category: "other" },
-  { name: "Figma", icon: "figma/figma-original", category: "other" },
-  { name: "Docker", icon: "docker/docker-original", category: "other" },
-  { name: "PostgreSQL", icon: "postgresql/postgresql-original", category: "other" },
-  { name: "MongoDB", icon: "mongodb/mongodb-original", category: "other" },
-  { name: "VS Code", icon: "vscode/vscode-original", category: "other" },
-];
-
-const DEVICON_BASE = "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons";
-
 const DESIGN_TITLE = "Design Works";
 const ABOUT_SUBTITLE_LINES = [
   "Engineer by instinct,",
@@ -191,7 +174,59 @@ const ABOUT_PARAGRAPHS = [
   "From ERP platforms and online testing systems to interactive web experiences, I enjoy combining technical expertise, problem-solving, and creativity to deliver products that create real value.",
 ];
 const ABOUT_PARAGRAPH_TEXT = ABOUT_PARAGRAPHS.join(" ");
-const ABOUT_PARAGRAPH_WORDS = ABOUT_PARAGRAPH_TEXT.split(" ");
+const CAREER_TITLE_LINES = ["Career", "at a glance"];
+const CAREER_SUMMARY = "CV-backed snapshot of projects, product work, and engineering progress.";
+const CAREER_STATS: CareerStat[] = [
+  { value: 10, suffix: "+", label: "Projects" },
+  { value: 3, label: "Games Created" },
+  { value: 3, label: "Ongoing Projects" },
+  { value: 1, suffix: "+", label: "Engineering Experience" },
+  { value: 5, label: "Years in Graphic Design" },
+  { value: 8.6, decimals: 1, label: "CGPA" },
+];
+const SHOWCASE_MENU_ITEMS: InfiniteMenuItem[] = [
+  {
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1600&h=1600&fit=crop",
+    link: "#",
+    title: "Cloud Code Editor",
+    description: "React + Node editor with auth, storage, and execution flows.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1600&h=1600&fit=crop",
+    link: "#",
+    title: "Online Tool System",
+    description: "Backend-powered media workflows with validation and secure file handling.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&h=1600&fit=crop",
+    link: "#",
+    title: "Testing Portal",
+    description: "NestJS proctoring system for tests, assignments, and role-based access.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600&h=1600&fit=crop",
+    link: "#",
+    title: "Sports ERP",
+    description: "Multi-role platform to manage club operations, players, and administration.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1600&h=1600&fit=crop",
+    link: "#",
+    title: "Cricket Game",
+    description: "3D cricket experience built with Three.js, TypeScript, Cannon, and Blender.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=1600&h=1600&fit=crop",
+    link: "#",
+    title: "Agency Portfolio",
+    description: "Motion-led portfolio system focused on presentation, clarity, and interaction.",
+  },
+];
+
+function formatCareerStatValue(stat: CareerStat, value: number) {
+  const digits = stat.decimals ?? 0;
+  return `${value.toFixed(digits)}${stat.suffix ?? ""}`;
+}
 
 export function WorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -213,12 +248,18 @@ export function WorksSection() {
   const popupBgRef = useRef<HTMLDivElement>(null);
   const crossOverlayRef = useRef<HTMLDivElement>(null);
   const crossGroupRef = useRef<SVGGElement>(null);
-  const toolsTitleWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const techGridRef = useRef<HTMLDivElement>(null);
-  const techItemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const careerTitleRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const careerSummaryRef = useRef<HTMLParagraphElement>(null);
+  const careerStatsGridRef = useRef<HTMLDivElement>(null);
+  const careerStatRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const careerStatValueRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const bottomRevealRef = useRef<HTMLDivElement>(null);
+  const bottomShowcaseVisibleRef = useRef(false);
   const droidMotionRef = useRef({ drift: 0, spin: 0 });
 
   const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [showBottomShowcase, setShowBottomShowcase] = useState(false);
+  const [useLightReveal, setUseLightReveal] = useState(false);
 
   const openPopup = (project: Project) => {
     setActiveProject(project);
@@ -244,6 +285,20 @@ export function WorksSection() {
   };
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 900px), (prefers-reduced-motion: reduce)");
+    const updateRevealMode = () => {
+      setUseLightReveal(mediaQuery.matches);
+    };
+
+    updateRevealMode();
+    mediaQuery.addEventListener("change", updateRevealMode);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateRevealMode);
+    };
+  }, []);
+
+  useEffect(() => {
     if (activeProject && popupRef.current && popupBgRef.current) {
       gsap.fromTo(
         popupBgRef.current,
@@ -265,6 +320,12 @@ export function WorksSection() {
       const aboutParagraphWords = aboutParagraphWordRefs.current.filter(
         (el): el is HTMLSpanElement => Boolean(el)
       );
+      const careerTitleWords = careerTitleRefs.current.filter(
+        (el): el is HTMLSpanElement => Boolean(el)
+      );
+      const careerStatCards = careerStatRefs.current.filter(
+        (el): el is HTMLDivElement => Boolean(el)
+      );
       if (aboutParagraphWords.length > 0) {
         gsap.set(aboutParagraphWords, { opacity: 0.1 });
         gsap.set(aboutParagraphWords[0], { opacity: 1 });
@@ -272,6 +333,13 @@ export function WorksSection() {
           gsap.set(aboutParagraphWords[1], { opacity: 0.4 });
         }
       }
+      if (bottomRevealRef.current) {
+        gsap.set(bottomRevealRef.current, { yPercent: 100 });
+      }
+      careerStatValueRefs.current.forEach((el, i) => {
+        if (!el) return;
+        el.textContent = formatCareerStatValue(CAREER_STATS[i], 0);
+      });
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -281,6 +349,13 @@ export function WorksSection() {
           scrub: 0.8,
           pin: ".works-sticky",
           invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const nextShowBottomShowcase = self.progress > 0.935;
+            if (bottomShowcaseVisibleRef.current !== nextShowBottomShowcase) {
+              bottomShowcaseVisibleRef.current = nextShowBottomShowcase;
+              setShowBottomShowcase(nextShowBottomShowcase);
+            }
+          },
         },
       });
 
@@ -540,50 +615,76 @@ export function WorksSection() {
           },
           318
         );
-
-        // Phase 15: Tools title appears word by word
-        const toolsWords = toolsTitleWordRefs.current.filter(
-          (el): el is HTMLSpanElement => Boolean(el)
-        );
-        if (toolsWords.length > 0) {
+        if (careerTitleWords.length > 0) {
           tl.fromTo(
-            toolsWords,
-            { autoAlpha: 0, y: 36 },
+            careerTitleWords,
+            { autoAlpha: 0, y: 44 },
             {
               autoAlpha: 1,
               y: 0,
-              duration: 4,
-              stagger: 1.5,
+              duration: 6,
+              stagger: 2.5,
               ease: "power3.out",
             },
-            354
+            352
           );
         }
-
-        // Phase 16: Tech items appear with stagger
-        const techItems = techItemRefs.current.filter(
-          (el): el is HTMLDivElement => Boolean(el)
-        );
         tl.fromTo(
-          techGridRef.current,
-          { autoAlpha: 0, y: 24 },
+          careerSummaryRef.current,
+          { autoAlpha: 0, y: 20 },
           { autoAlpha: 1, y: 0, duration: 8, ease: "power2.out" },
           360
         );
-        if (techItems.length > 0) {
+        tl.fromTo(
+          careerStatsGridRef.current,
+          { autoAlpha: 0, y: 36 },
+          { autoAlpha: 1, y: 0, duration: 8, ease: "power2.out" },
+          370
+        );
+        if (careerStatCards.length > 0) {
           tl.fromTo(
-            techItems,
-            { autoAlpha: 0, y: 18 },
+            careerStatCards,
+            { autoAlpha: 0, y: 28, scale: 0.96 },
             {
               autoAlpha: 1,
               y: 0,
-              duration: 2,
-              stagger: 0.16,
+              scale: 1,
+              duration: 4,
+              stagger: 1.5,
               ease: "power2.out",
             },
-            362
+            372
           );
         }
+        CAREER_STATS.forEach((stat, i) => {
+          const el = careerStatValueRefs.current[i];
+          if (!el) return;
+
+          const counter = { value: 0 };
+          tl.to(
+            counter,
+            {
+              value: stat.value,
+              duration: 10,
+              ease: "power2.out",
+              snap: stat.decimals ? undefined : { value: 1 },
+              onUpdate: () => {
+                el.textContent = formatCareerStatValue(stat, counter.value);
+              },
+            },
+            376 + i * 1.8
+          );
+        });
+        tl.fromTo(
+          bottomRevealRef.current,
+          { yPercent: 100 },
+          {
+            yPercent: 0,
+            duration: 24,
+            ease: "power3.inOut",
+          },
+          398
+        );
       }
     }, containerRef);
 
@@ -719,37 +820,37 @@ export function WorksSection() {
           </div>
 
           {/* Cross reveal overlay */}
-          <div ref={crossOverlayRef} className="works-cross-overlay" aria-hidden="true">
-            <div className="works-cross-bg">
-              <div className="tools-title-wrap">
-                <span
-                  ref={(el) => { toolsTitleWordRefs.current[0] = el; }}
-                  className="tools-title-word"
-                >
-                  Tools &amp; Technologies
-                </span>
-                <span
-                  ref={(el) => { toolsTitleWordRefs.current[1] = el; }}
-                  className="tools-title-word tools-title-word--small"
-                >
-                  i use
-                </span>
-              </div>
-
-              <div ref={techGridRef} className="tech-grid">
-                {TECH_STACK.map((tech, i) => (
-                  <div
-                    key={tech.name}
-                    ref={(el) => { techItemRefs.current[i] = el; }}
-                    className="tech-item"
+          <div ref={crossOverlayRef} className="works-cross-overlay">
+            <div className="works-cross-bg" />
+            <div className="career-glance-wrap">
+              <h2 className="career-title" aria-label="Career at a glance">
+                {CAREER_TITLE_LINES.map((line, i) => (
+                  <span
+                    key={line}
+                    ref={(el) => { careerTitleRefs.current[i] = el; }}
+                    className="career-title-line"
                   >
-                    <img
-                      className="tech-icon"
-                      src={`${DEVICON_BASE}/${tech.icon}.svg`}
-                      alt={tech.name}
-                      loading="lazy"
-                    />
-                    <span className="tech-label">{tech.name}</span>
+                    {line}
+                  </span>
+                ))}
+              </h2>
+              <p ref={careerSummaryRef} className="career-summary">
+                {CAREER_SUMMARY}
+              </p>
+              <div ref={careerStatsGridRef} className="career-stats-grid">
+                {CAREER_STATS.map((stat, i) => (
+                  <div
+                    key={stat.label}
+                    ref={(el) => { careerStatRefs.current[i] = el; }}
+                    className="career-stat-card"
+                  >
+                    <span
+                      ref={(el) => { careerStatValueRefs.current[i] = el; }}
+                      className="career-stat-value"
+                    >
+                      {formatCareerStatValue(stat, 0)}
+                    </span>
+                    <span className="career-stat-label">{stat.label}</span>
                   </div>
                 ))}
               </div>
@@ -758,6 +859,7 @@ export function WorksSection() {
               className="works-cross-svg"
               viewBox="0 0 100 100"
               preserveAspectRatio="xMidYMid slice"
+              aria-hidden="true"
             >
               <defs>
                 <mask id="works-cross-mask">
@@ -775,6 +877,31 @@ export function WorksSection() {
                 mask="url(#works-cross-mask)"
               />
             </svg>
+          </div>
+
+          <div
+            ref={bottomRevealRef}
+            className="works-slide works-bottom-reveal"
+          >
+            {showBottomShowcase && !useLightReveal ? (
+              <div className="works-bottom-reveal-bg">
+                <MagnetLines
+                  rows={18}
+                  columns={14}
+                  containerSize="120vmax"
+                  lineColor="#ff8843"
+                  lineWidth="2px"
+                  lineHeight="30px"
+                  baseAngle={-10}
+                  className="works-bottom-magnet-lines"
+                />
+              </div>
+            ) : null}
+            <div className="works-bottom-reveal-content">
+              {showBottomShowcase ? (
+                <InfiniteMenu items={SHOWCASE_MENU_ITEMS} scale={1} />
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
