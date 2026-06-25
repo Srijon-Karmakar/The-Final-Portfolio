@@ -6,13 +6,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const LOGO_O_TRANSFORM_ORIGIN = "75.4% 54.7%";
+
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const blackLayerRef = useRef<HTMLDivElement>(null);
   const introLockupRef = useRef<HTMLDivElement>(null);
-  const introIconRef = useRef<HTMLImageElement>(null);
-  const introWordRef = useRef<HTMLParagraphElement>(null);
-  const maskSvgRef = useRef<SVGSVGElement>(null);
+  const introLogoRef = useRef<HTMLImageElement>(null);
+  const zoomLogoStageRef = useRef<HTMLDivElement>(null);
+  const zoomLogoRef = useRef<HTMLImageElement>(null);
   const whiteLayerRef = useRef<HTMLDivElement>(null);
   const subtextRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const circleRef = useRef<HTMLDivElement>(null);
@@ -35,32 +37,15 @@ export function HeroSection() {
 
     const ctx = gsap.context(() => {
       const introLockup = introLockupRef.current;
-      const introIcon = introIconRef.current;
-      const introWord = introWordRef.current;
-      const maskSvg = maskSvgRef.current;
-      const textEl = maskSvg?.querySelector("text");
+      const introLogo = introLogoRef.current;
+      const zoomLogoStage = zoomLogoStageRef.current;
+      const zoomLogo = zoomLogoRef.current;
 
-      if (!introLockup || !introIcon || !introWord || !maskSvg || !textEl) {
+      if (!introLockup || !introLogo || !zoomLogoStage || !zoomLogo) {
         return;
       }
 
       const buildScrollTimeline = () => {
-        const charIndex = 4;
-        let cx: number;
-        let cy: number;
-
-        try {
-          const extent = textEl.getExtentOfChar(charIndex);
-          cx = extent.x + extent.width / 2;
-          cy = extent.y + extent.height / 2;
-        } catch {
-          cx = 567;
-          cy = 80;
-        }
-
-        const finalSize = 2;
-        const finalViewBox = `${cx - finalSize / 2} ${cy - finalSize / 2} ${finalSize} ${finalSize}`;
-
         scrollTimeline = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
@@ -71,29 +56,19 @@ export function HeroSection() {
           },
         });
 
-        scrollTimeline.fromTo(
-          maskSvg,
-          { opacity: 0 },
-          { opacity: 1, duration: 6, ease: "power2.out" },
-          0
-        );
+        scrollTimeline.set(zoomLogo, { transformOrigin: LOGO_O_TRANSFORM_ORIGIN }, 0);
+
+        scrollTimeline.fromTo(zoomLogoStage, { opacity: 0 }, { opacity: 1, duration: 2, ease: "none" }, 0);
+
+        scrollTimeline.to(introLockup, { opacity: 0, duration: 6, ease: "power2.out" }, 0);
 
         scrollTimeline.to(
-          introLockup,
+          zoomLogo,
           {
-            opacity: 0,
-            duration: 6,
-            ease: "power2.out",
-          },
-          0
-        );
-
-        scrollTimeline.to(
-          maskSvg,
-          {
-            attr: { viewBox: finalViewBox },
+            scale: 28,
             duration: 30,
             ease: "power3.in",
+            transformOrigin: LOGO_O_TRANSFORM_ORIGIN,
           },
           0
         );
@@ -144,52 +119,27 @@ export function HeroSection() {
       };
 
       const startIntro = () => {
-        const wordWidth = introWord.scrollWidth;
-        const lockupGap = Math.max(12, Math.min(28, window.innerWidth * 0.016));
-
-        gsap.set(maskSvg, { opacity: 0 });
+        gsap.set(zoomLogoStage, { opacity: 0 });
+        gsap.set(zoomLogo, { scale: 1, transformOrigin: LOGO_O_TRANSFORM_ORIGIN });
         gsap.set(introLockup, { opacity: 1 });
-        gsap.set(introLockup, { gap: 0 });
-        gsap.set(introIcon, { opacity: 0, scale: 0.82, x: 0 });
-        gsap.set(introWord, { opacity: 0, width: 0, x: 18 });
+        gsap.set(introLogo, { opacity: 0, scale: 0.86, y: 18 });
 
         introTimeline = gsap.timeline({
           onComplete: buildScrollTimeline,
         });
 
-        introTimeline.to(introIcon, {
+        introTimeline.to(introLogo, {
           opacity: 1,
           scale: 1,
+          y: 0,
           duration: 0.85,
           ease: "power3.out",
         });
 
-        introTimeline.to({}, { duration: 0.6 });
-
-        introTimeline.to(introLockup, {
-          gap: lockupGap,
-          duration: 0.95,
-          ease: "power3.inOut",
-        });
-
-        introTimeline.to(
-          introWord,
-          {
-            opacity: 1,
-            width: wordWidth,
-            x: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          },
-          "<+0.06"
-        );
+        introTimeline.to({}, { duration: 0.9 });
       };
 
-      if (document.fonts?.ready) {
-        document.fonts.ready.then(startIntro);
-      } else {
-        startIntro();
-      }
+      startIntro();
     }, containerRef);
 
     return () => {
@@ -208,37 +158,12 @@ export function HeroSection() {
       <div className="hero-sticky">
         <div ref={blackLayerRef} className="hero-black-layer">
           <div ref={introLockupRef} className="hero-intro-lockup" aria-hidden="true">
-            <img
-              ref={introIconRef}
-              src="/logo/icon.png"
-              alt=""
-              className="hero-intro-icon"
-            />
-            <p ref={introWordRef} className="hero-intro-word">
-              srijon
-            </p>
+            <img ref={introLogoRef} src="/logo/logo.png" alt="" className="hero-intro-logo" />
           </div>
 
-          <svg
-            ref={maskSvgRef}
-            className="hero-mask-text"
-            viewBox="0 0 900 200"
-            preserveAspectRatio="xMidYMid meet"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <text
-              x="450"
-              y="140"
-              textAnchor="middle"
-              fill="white"
-              fontFamily="'Azonix', sans-serif"
-              fontWeight="400"
-              fontSize="120"
-              letterSpacing="-2"
-            >
-              srijon
-            </text>
-          </svg>
+          <div ref={zoomLogoStageRef} className="hero-zoom-logo-stage" aria-hidden="true">
+            <img ref={zoomLogoRef} src="/logo/logo.png" alt="" className="hero-zoom-logo" />
+          </div>
         </div>
 
         <div ref={whiteLayerRef} className="hero-white-layer">

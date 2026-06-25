@@ -36,8 +36,7 @@ export function SiteHeader() {
     <header className={`site-header${isMenuOpen ? " site-header--menu-open" : ""}`}>
       <div className="site-header__inner">
         <a href="#" className="site-header__brand" aria-label="Go to top">
-          <span className="site-header__brand-mark" />
-          <span className="site-header__brand-text">srijon</span>
+          <img src="/logo/icon.png" alt="Srijon icon" className="site-header__brand-image" />
         </a>
 
         <nav className="site-header__nav" aria-label="Primary navigation">

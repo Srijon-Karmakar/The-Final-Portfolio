@@ -79,23 +79,13 @@ a {
 .site-header__brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
-  font-family: "Azonix", sans-serif;
-  font-size: 0.95rem;
-  letter-spacing: 0.16em;
-  text-transform: lowercase;
-}
-
-.site-header__brand-mark {
-  width: 0.72rem;
-  height: 0.72rem;
-  border-radius: 999px;
-  background: currentColor;
   flex: none;
 }
 
-.site-header__brand-text {
-  line-height: 1;
+.site-header__brand-image {
+  display: block;
+  width: auto;
+  height: 2rem;
 }
 
 .site-header__nav {
@@ -202,41 +192,29 @@ a {
   position: absolute;
   inset: 0;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.75rem, 1.6vw, 1.75rem);
+  display: grid;
+  place-items: center;
   pointer-events: none;
 }
 
-.hero-intro-icon {
-  width: clamp(4.75rem, 10vw, 8.5rem);
+.hero-intro-logo,
+.hero-zoom-logo {
+  width: clamp(18rem, 54vw, 46rem);
   height: auto;
   display: block;
   will-change: transform, opacity;
 }
 
-.hero-intro-word {
-  margin: 0;
-  font-family: "Azonix", sans-serif;
-  font-size: clamp(3.25rem, 11vw, 9rem);
-  letter-spacing: -0.05em;
-  line-height: 1;
-  color: #ffffff;
-  text-transform: lowercase;
-  white-space: nowrap;
-  overflow: hidden;
-  will-change: transform, opacity;
-}
-
-.hero-mask-text {
+.hero-zoom-logo-stage {
   position: absolute;
   inset: 0;
   z-index: 1;
-  width: 100%;
-  height: 100%;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
   user-select: none;
-  will-change: transform, opacity;
+  will-change: opacity;
 }
 
 /* ── White Layer (revealed) ── */
@@ -303,12 +281,9 @@ a {
 
 /* ── Tablet ── */
 @media (min-width: 768px) {
-  .hero-intro-icon {
-    width: clamp(5.5rem, 8vw, 8.75rem);
-  }
-
-  .hero-intro-word {
-    font-size: clamp(4.5rem, 9vw, 9.75rem);
+  .hero-intro-logo,
+  .hero-zoom-logo {
+    width: clamp(24rem, 52vw, 52rem);
   }
 
   .hero-title {
@@ -338,12 +313,9 @@ a {
 
 /* ── Desktop ── */
 @media (min-width: 1024px) {
-  .hero-intro-icon {
-    width: clamp(6rem, 6vw, 9.25rem);
-  }
-
-  .hero-intro-word {
-    font-size: clamp(5.5rem, 8vw, 10.5rem);
+  .hero-intro-logo,
+  .hero-zoom-logo {
+    width: clamp(28rem, 46vw, 54rem);
   }
 
   .hero-title {
@@ -384,9 +356,8 @@ a {
     width: 100%;
   }
 
-  .site-header__brand {
-    font-size: 0.82rem;
-    letter-spacing: 0.12em;
+  .site-header__brand-image {
+    height: 1.7rem;
   }
 
   .site-header__nav {
@@ -992,6 +963,12 @@ a {
   transition: opacity 0.35s ease;
 }
 
+.bento-overlay-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
 .bento-item:hover .bento-overlay {
   opacity: 1;
 }
@@ -1001,6 +978,14 @@ a {
   font-family: var(--font-manrope), sans-serif;
   font-weight: 700;
   font-size: 3.5vw;
+  letter-spacing: -0.01em;
+}
+
+.bento-overlay-subtitle {
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 500;
+  font-size: 1.85vw;
   letter-spacing: -0.01em;
 }
 
@@ -1125,6 +1110,10 @@ a {
 
   .bento-overlay-title {
     font-size: 1.6vw;
+  }
+
+  .bento-overlay-subtitle {
+    font-size: 0.9vw;
   }
 }
 

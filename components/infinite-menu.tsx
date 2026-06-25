@@ -451,13 +451,15 @@ class ArcballControl {
 
   constructor(
     private canvas: HTMLCanvasElement,
-    private updateCallback: UpdateCallback = () => undefined
+    private updateCallback: UpdateCallback = () => undefined,
+    touchAction = "none"
   ) {
     canvas.addEventListener("pointerdown", this.handlePointerDown);
     canvas.addEventListener("pointerup", this.handlePointerUp);
+    canvas.addEventListener("pointercancel", this.handlePointerUp);
     canvas.addEventListener("pointerleave", this.handlePointerUp);
     canvas.addEventListener("pointermove", this.handlePointerMove);
-    canvas.style.touchAction = "none";
+    canvas.style.touchAction = touchAction;
   }
 
   public update(deltaTime: number, targetFrameDuration = 16) {
@@ -533,6 +535,7 @@ class ArcballControl {
   public destroy() {
     this.canvas.removeEventListener("pointerdown", this.handlePointerDown);
     this.canvas.removeEventListener("pointerup", this.handlePointerUp);
+    this.canvas.removeEventListener("pointercancel", this.handlePointerUp);
     this.canvas.removeEventListener("pointerleave", this.handlePointerUp);
     this.canvas.removeEventListener("pointermove", this.handlePointerMove);
   }
@@ -670,7 +673,8 @@ class InfiniteGridMenu {
     private onActiveItemChange: ActiveItemCallback,
     private onMovementChange: MovementChangeCallback,
     onInit?: InitCallback,
-    scale = 1.0
+    scale = 1.0,
+    private touchAction = "none"
   ) {
     this.scaleFactor = scale;
     this.camera.position[2] = 3 * scale;
@@ -775,7 +779,11 @@ class InfiniteGridMenu {
     this.discInstanceCount = this.icoGeo.vertices.length;
     this.initDiscInstances(this.discInstanceCount);
     this.initTexture();
-    this.control = new ArcballControl(this.canvas, (deltaTime) => this.onControlUpdate(deltaTime));
+    this.control = new ArcballControl(
+      this.canvas,
+      (deltaTime) => this.onControlUpdate(deltaTime),
+      this.touchAction
+    );
 
     this.updateCameraMatrix();
     this.updateProjectionMatrix();
@@ -1077,7 +1085,8 @@ export function InfiniteMenu({ items = [], scale = 1.0 }: InfiniteMenuProps) {
         handleActiveItem,
         setIsMoving,
         (instance) => instance.run(),
-        isCompactLayout ? 0.9 : scale
+        isCompactLayout ? 0.9 : scale,
+        isCompactLayout ? "pan-y" : "none"
       );
     }
 

@@ -37,46 +37,52 @@ interface CareerStat {
 
 const ENGINEERING_PROJECTS: Project[] = [
   {
-    img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=500&fit=crop",
-    title: "DevFlow",
-    desc: "A real-time collaborative code editor with syntax highlighting and live cursors.",
-    link: "#",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383831/the_better_pass_oxk3e9.png",
+    title: "BetterPass",
+    desc: "Travel app",
+    link: "https://thebetterpass.com",
   },
   {
-    img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=500&fit=crop",
-    title: "StackSync",
-    desc: "Full-stack deployment pipeline automating CI/CD for monorepo architectures.",
-    link: "#",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383831/toolit_zkgtgd.png",
+    title: "ToolMitra",
+    desc: "Online tool system",
+    link: "https://toolit-y4pd.onrender.com",
   },
   {
-    img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop",
-    title: "InsightBoard",
-    desc: "Analytics dashboard with real-time data visualization and custom widgets.",
-    link: "#",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383831/snv_studio_yyhswq.png",
+    title: "Senevon Studio",
+    desc: "Agency portfolio",
+    link: "https://senevon.in",
   },
   {
-    img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=500&fit=crop",
-    title: "CloudForge",
-    desc: "Infrastructure-as-code platform for provisioning cloud resources visually.",
-    link: "#",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383831/house_of_musa_ztbea2.png",
+    title: "House of Musa",
+    desc: "3D agency portfolio",
+    link: "https://www.houseofmusa.co.in",
   },
   {
-    img: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=500&fit=crop",
-    title: "Mobicraft",
-    desc: "Cross-platform mobile app builder with drag-and-drop components.",
-    link: "#",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383830/cricket_game_yiasxt.png",
+    title: "POV-Cricket Game",
+    desc: "3D online game",
+    link: "https://pov-cricket.onrender.com",
   },
   {
-    img: "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=800&h=500&fit=crop",
-    title: "Wireframe AI",
-    desc: "AI-powered wireframing tool that converts sketches to production-ready UI.",
-    link: "#",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383830/art_block_d3xgk2.png",
+    title: "ArtBlock",
+    desc: "Social media",
+    link: "https://artblock-03d1.onrender.com",
   },
   {
-    img: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=500&fit=crop",
-    title: "CodeLens",
-    desc: "Intelligent code review assistant with automated vulnerability scanning.",
-    link: "#",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383829/3d-portfolio_myrle9.png",
+    title: "3D-Portfolio",
+    desc: "Personal portfolio",
+    link: "https://srijons.onrender.com",
+  },
+  {
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782383829/esportm_osgsiz.png",
+    title: "EsportM",
+    desc: "Sports management system",
+    link: "https://esm-9x3l.onrender.com",
   },
 ];
 
@@ -231,7 +237,7 @@ function formatCareerStatValue(stat: CareerStat, value: number) {
 export function WorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const gridRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const gridRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const slideWrapRef = useRef<HTMLDivElement>(null);
   const nextSectionRef = useRef<HTMLDivElement>(null);
   const designCircleRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -713,17 +719,23 @@ export function WorksSection() {
             </h2>
             <div className="bento-grid">
               {ENGINEERING_PROJECTS.map((project, i) => (
-                <div
+                <a
                   key={i}
                   ref={(el) => { gridRefs.current[i] = el; }}
                   className="bento-item"
-                  onClick={() => openPopup(project)}
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Open ${project.title}`}
                 >
                   <img src={project.img} alt={project.title} loading="lazy" />
                   <div className="bento-overlay">
-                    <span className="bento-overlay-title">{project.title}</span>
+                    <div className="bento-overlay-copy">
+                      <span className="bento-overlay-title">{project.title}</span>
+                      <span className="bento-overlay-subtitle">{project.desc}</span>
+                    </div>
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           </div>
