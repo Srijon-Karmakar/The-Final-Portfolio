@@ -624,20 +624,40 @@ a {
     var(--white);
 }
 
-.design-title {
+.design-title-wrap {
   position: absolute;
   top: 3vh;
   left: 50%;
   z-index: 1;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.45rem, 1vw, 0.8rem);
+  width: max-content;
+  pointer-events: none;
+}
+
+.design-title {
+  display: block;
   font-family: "Halenoir", var(--font-manrope), sans-serif;
   font-weight: 500;
   font-size: clamp(3.6rem, 15vw, 11rem);
   line-height: 0.9;
   letter-spacing: -0.04em;
   color: var(--gray-soft);
+  margin: 0;
   white-space: nowrap;
-  pointer-events: none;
+}
+
+.design-title-subtext {
+  margin: 0;
+  font-family: var(--font-manrope), sans-serif;
+  font-size: clamp(0.82rem, 1.25vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.54);
 }
 
 .design-title-letter {
@@ -649,12 +669,13 @@ a {
 .design-circle {
   position: absolute;
   z-index: 3;
-  aspect-ratio: 1;
+  aspect-ratio: 2.8 / 1;
   border: none;
-  border-radius: 50%;
-  overflow: hidden;
+  border-radius: 18px;
+  overflow: visible;
+  box-sizing: border-box;
   padding: 0;
-  background: #e3e3de;
+  background: transparent;
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
@@ -664,19 +685,14 @@ a {
 .design-circle img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-              filter 0.35s ease;
+  transform: scale(var(--design-logo-scale, 1));
+  transition: transform 0.35s ease, filter 0.35s ease;
 }
 
 .design-circle::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.45), transparent 58%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  display: none;
 }
 
 .design-circle:hover::after,
@@ -686,7 +702,7 @@ a {
 
 .design-circle:hover img,
 .design-circle:focus-visible img {
-  transform: scale(1.08);
+  transform: scale(calc(var(--design-logo-scale, 1) * 1.08));
   filter: saturate(1.05);
 }
 
@@ -696,25 +712,7 @@ a {
 }
 
 .design-circle-label {
-  position: absolute;
-  left: 50%;
-  bottom: 11%;
-  z-index: 1;
-  transform: translateX(-50%);
-  font-family: var(--font-manrope), sans-serif;
-  font-weight: 700;
-  font-size: clamp(0.72rem, 1.2vw, 0.95rem);
-  letter-spacing: -0.01em;
-  color: var(--white);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.design-circle:hover .design-circle-label,
-.design-circle:focus-visible .design-circle-label {
-  opacity: 1;
+  display: none;
 }
 
 .design-cartoon {
@@ -867,9 +865,9 @@ a {
 }
 
 .design-circle--4 {
-  top: 15vh;
-  right: 22vw;
-  width: 11vw;
+  top: 41vh;
+  left: 9vw;
+  width: 14vw;
 }
 
 .design-circle--5 {
@@ -1062,9 +1060,9 @@ a {
   }
 
   .design-circle--4 {
-    top: 14vh;
-    right: 23vw;
-    width: 8vw;
+    top: 40vh;
+    left: 10vw;
+    width: 11vw;
   }
 
   .design-circle--5 {
@@ -1190,9 +1188,9 @@ a {
   }
 
   .design-circle--4 {
-    top: 13vh;
-    right: 24vw;
-    width: 6vw;
+    top: 39vh;
+    left: 10vw;
+    width: 8vw;
   }
 
   .design-circle--5 {

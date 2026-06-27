@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, type CSSProperties, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { DroidScene } from "@/components/droid-scene";
@@ -25,6 +25,7 @@ interface Project {
 interface DesignProject extends Project {
   circleClassName: string;
   appearAt: number;
+  imageScale?: number;
 }
 
 interface CareerStat {
@@ -88,88 +89,90 @@ const ENGINEERING_PROJECTS: Project[] = [
 
 const DESIGN_PROJECTS: DesignProject[] = [
   {
-    img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
-    title: "Interface Atlas",
-    desc: "A modular UI system study exploring dense dashboard layouts and scalable components.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546710/artBlock_k2w3gs.png",
+    title: "ArtBlock",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--1",
     appearAt: 82,
+    imageScale: 1.9,
   },
   {
-    img: "https://images.unsplash.com/photo-1516387938699-a93567ec168e?auto=format&fit=crop&w=900&q=80",
-    title: "Poster Pulse",
-    desc: "Experimental poster direction mixing bold color blocks, oversized type, and motion-first layouts.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546710/betterPass_geite8.png",
+    title: "BetterPass",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--2",
     appearAt: 88,
+    imageScale: 2.9,
   },
   {
-    img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80",
-    title: "Figma Frames",
-    desc: "High-fidelity web app screens translated into polished Figma prototypes and design tokens.",
-    link: "#",
-    circleClassName: "design-circle--3",
-    appearAt: 94,
-  },
-  {
-    img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=900&q=80",
-    title: "Palette Study",
-    desc: "Color system explorations balancing accessibility, depth, and a soft editorial visual language.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546710/edifyeight_vevhaf.png",
+    title: "Edifyeight",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--4",
     appearAt: 94,
+    imageScale: 2.25,
   },
   {
-    img: "https://images.unsplash.com/photo-1523726491678-bf852e717f6a?auto=format&fit=crop&w=900&q=80",
-    title: "Brand Orbit",
-    desc: "Identity direction for a digital product studio spanning symbol work, layouts, and brand motion.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546711/matebid_xb52zg.png",
+    title: "Matebid",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--5",
     appearAt: 100,
+    imageScale: 1.8,
   },
   {
-    img: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80",
-    title: "Grid Study",
-    desc: "Editorial-style composition tests built around asymmetric spacing and precise visual rhythm.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546710/fnb_iexckz.png",
+    title: "FNB",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--6",
     appearAt: 106,
+    imageScale: 2.1,
   },
   {
-    img: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=900&q=80",
-    title: "Motion Sheets",
-    desc: "Micro-interaction boards defining transitions, timing curves, and interface choreography.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546710/esportm_ktaras.png",
+    title: "EsportM",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--7",
     appearAt: 112,
+    imageScale: 1.95,
   },
   {
-    img: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80",
-    title: "Icon Atlas",
-    desc: "Interface icon explorations focused on consistency, optical balance, and sharp small-size rendering.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546711/testlake_wwesnz.png",
+    title: "eTester",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--8",
     appearAt: 112,
+    imageScale: 3.1,
   },
   {
-    img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=900&q=80",
-    title: "Type Rhythm",
-    desc: "Display typography explorations pairing heavy headlines with quiet, neutral supporting copy.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546711/senevon_m6ou5l.png",
+    title: "Senevon",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--9",
     appearAt: 118,
+    imageScale: 2.6,
   },
   {
-    img: "https://images.unsplash.com/photo-1510906594845-bc082582c8cc?auto=format&fit=crop&w=900&q=80",
-    title: "Visual Stack",
-    desc: "Cross-device design mockups testing balance between product clarity, imagery, and spatial depth.",
+    img: "https://res.cloudinary.com/dneq7tdty/image/upload/v1782546711/yarroowtech_xfrkul.png",
+    title: "Yarrowtech",
+    desc: "Logo design",
     link: "#",
     circleClassName: "design-circle--10",
     appearAt: 124,
+    imageScale: 3.3,
   },
 ];
 
 const DESIGN_TITLE = "Design Works";
+const DESIGN_SUBTITLE = "Logos i made";
 const ABOUT_SUBTITLE_LINES = [
   "Engineer by instinct,",
   "3D designer by hobby.",
@@ -234,6 +237,38 @@ function formatCareerStatValue(stat: CareerStat, value: number) {
   return `${value.toFixed(digits)}${stat.suffix ?? ""}`;
 }
 
+function cloudinaryImage(src: string, transformations: string) {
+  if (!src.includes("res.cloudinary.com") || !src.includes("/image/upload/")) {
+    return src;
+  }
+
+  return src.replace(
+    "/image/upload/",
+    `/image/upload/${transformations}/`
+  );
+}
+
+function getEngineeringProjectImage(src: string) {
+  return cloudinaryImage(
+    src,
+    "f_auto,q_auto,dpr_auto,w_900,h_700,c_fill,g_auto"
+  );
+}
+
+function getDesignProjectImage(src: string) {
+  return cloudinaryImage(
+    src,
+    "f_auto,q_auto,dpr_auto,w_900,h_900,c_fit,b_transparent"
+  );
+}
+
+function getPopupImage(src: string) {
+  return cloudinaryImage(
+    src,
+    "f_auto,q_auto,dpr_auto,w_1400,h_1000,c_fit"
+  );
+}
+
 export function WorksSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -242,6 +277,7 @@ export function WorksSection() {
   const nextSectionRef = useRef<HTMLDivElement>(null);
   const designCircleRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const designLetterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const designSubtitleRef = useRef<HTMLParagraphElement>(null);
   const cartoonRef = useRef<HTMLImageElement>(null);
   const expandBoxRef = useRef<HTMLDivElement>(null);
   const modelStageRef = useRef<HTMLDivElement>(null);
@@ -329,6 +365,9 @@ export function WorksSection() {
       }
       if (bottomRevealRef.current) {
         gsap.set(bottomRevealRef.current, { yPercent: 100 });
+      }
+      if (designSubtitleRef.current) {
+        gsap.set(designSubtitleRef.current, { autoAlpha: 0, y: 18 });
       }
       careerStatValueRefs.current.forEach((el, i) => {
         if (!el) return;
@@ -429,6 +468,17 @@ export function WorksSection() {
           148
         );
       }
+      tl.fromTo(
+        designSubtitleRef.current,
+        { autoAlpha: 0, y: 18 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 6,
+          ease: "power2.out",
+        },
+        162
+      );
 
       // Phase 7: Small purple square slides into the center.
       tl.fromTo(
@@ -728,7 +778,13 @@ export function WorksSection() {
                   rel="noopener noreferrer"
                   aria-label={`Open ${project.title}`}
                 >
-                  <img src={project.img} alt={project.title} loading="lazy" />
+                  <img
+                    src={getEngineeringProjectImage(project.img)}
+                    alt={project.title}
+                    loading={i < 2 ? "eager" : "lazy"}
+                    fetchPriority={i < 2 ? "high" : "auto"}
+                    decoding="async"
+                  />
                   <div className="bento-overlay">
                     <div className="bento-overlay-copy">
                       <span className="bento-overlay-title">{project.title}</span>
@@ -743,17 +799,22 @@ export function WorksSection() {
           {/* White section (slides in from right) */}
           <div ref={nextSectionRef} className="works-slide works-white">
             <div className="works-white-inner">
-              <h2 className="design-title" aria-label={DESIGN_TITLE}>
-                {DESIGN_TITLE.split("").map((character, i) => (
-                  <span
-                    key={`${character}-${i}`}
-                    ref={(el) => { designLetterRefs.current[i] = el; }}
-                    className="design-title-letter"
-                  >
-                    {character === " " ? "\u00A0" : character}
-                  </span>
-                ))}
-              </h2>
+              <div className="design-title-wrap">
+                <h2 className="design-title" aria-label={DESIGN_TITLE}>
+                  {DESIGN_TITLE.split("").map((character, i) => (
+                    <span
+                      key={`${character}-${i}`}
+                      ref={(el) => { designLetterRefs.current[i] = el; }}
+                      className="design-title-letter"
+                    >
+                      {character === " " ? "\u00A0" : character}
+                    </span>
+                  ))}
+                </h2>
+                <p ref={designSubtitleRef} className="design-title-subtext">
+                  {DESIGN_SUBTITLE}
+                </p>
+              </div>
 
               {DESIGN_PROJECTS.map((project, i) => (
                 <button
@@ -764,7 +825,13 @@ export function WorksSection() {
                   onClick={() => openPopup(project)}
                   aria-label={`Open ${project.title}`}
                 >
-                  <img src={project.img} alt={project.title} loading="lazy" />
+                  <img
+                    src={getDesignProjectImage(project.img)}
+                    alt={project.title}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ "--design-logo-scale": project.imageScale ?? 1 } as CSSProperties}
+                  />
                   <span className="design-circle-label">{project.title}</span>
                 </button>
               ))}
@@ -948,8 +1015,9 @@ export function WorksSection() {
             </button>
             <img
               className="popup-img"
-              src={activeProject.img}
+              src={getPopupImage(activeProject.img)}
               alt={activeProject.title}
+              decoding="async"
             />
             <div className="popup-body">
               <h3 className="popup-title">{activeProject.title}</h3>
