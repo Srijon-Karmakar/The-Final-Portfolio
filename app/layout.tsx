@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import { ChatbotWidget } from "@/components/chatbot-widget";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body className={manrope.variable}>
         <SiteHeader />
         {children}
+        <ChatbotWidget />
       </body>
     </html>
   );

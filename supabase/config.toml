@@ -1,0 +1,4 @@
+project_id = "oqzytgaswelsossrqife"
+
+[functions.srijon-chatbot]
+verify_jwt = true
