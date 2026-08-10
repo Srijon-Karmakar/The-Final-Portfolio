@@ -231,7 +231,12 @@ export function ChatbotWidget() {
         aria-label="Open Srijon chatbot"
         title="Chat"
       >
-        <BotIcon />
+        <span className="chatbot-launcher__glow chatbot-launcher__glow--outer" />
+        <span className="chatbot-launcher__glow chatbot-launcher__glow--inner" />
+        <span className="chatbot-launcher__border" />
+        <span className="chatbot-launcher__content">
+          <BotIcon />
+        </span>
       </button>
     </div>
   );

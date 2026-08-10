@@ -1,6 +1,14 @@
 # Srijon Chatbot Edge Function
 
-This function keeps Claude, OpenAI, and Gemini API keys server-side while the portfolio remains a static export.
+This function keeps OpenAI and Claude API keys server-side while the portfolio remains a static export.
+
+Routing order:
+
+1. OpenAI
+2. Claude
+3. Rule-based local answer
+
+If OpenAI fails because quota/tokens are exhausted, the key is missing, the request times out, or the provider returns an error, the function tries Claude. If Claude also fails, the function returns the rule-based answer.
 
 ## Deploy
 
@@ -17,16 +25,23 @@ Set provider keys as Supabase function secrets:
 ```bash
 supabase secrets set ANTHROPIC_API_KEY=your_claude_key --project-ref oqzytgaswelsossrqife
 supabase secrets set OPENAI_API_KEY=your_openai_key --project-ref oqzytgaswelsossrqife
-supabase secrets set GEMINI_API_KEY=your_gemini_key --project-ref oqzytgaswelsossrqife
 ```
 
 Optional model overrides:
 
 ```bash
 supabase secrets set ANTHROPIC_MODEL=claude-3-5-haiku-latest --project-ref oqzytgaswelsossrqife
-supabase secrets set OPENAI_MODEL=gpt-4o-mini --project-ref oqzytgaswelsossrqife
-supabase secrets set GEMINI_MODEL=gemini-1.5-flash --project-ref oqzytgaswelsossrqife
+supabase secrets set OPENAI_MODEL=gpt-5.6-sol --project-ref oqzytgaswelsossrqife
+supabase secrets set OPENAI_REASONING_EFFORT=none --project-ref oqzytgaswelsossrqife
 ```
+
+Optional public debugging during setup:
+
+```bash
+supabase secrets set DEBUG_PROVIDER_ERRORS=true --project-ref oqzytgaswelsossrqife
+```
+
+Leave `DEBUG_PROVIDER_ERRORS` unset in production so provider quota/auth details are only visible in Supabase function logs.
 
 ## Static Site
 

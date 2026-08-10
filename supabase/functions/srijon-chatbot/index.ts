@@ -8,6 +8,14 @@ type ProviderResult = {
   provider: string;
 };
 
+type OpenAIChatRequest = {
+  max_completion_tokens: number;
+  messages: Array<{ role: "system" | "user"; content: string }>;
+  model: string;
+  reasoning_effort?: string;
+  temperature: number;
+};
+
 const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -15,6 +23,7 @@ const corsHeaders = {
 };
 
 const providerTimeoutMs = 12000;
+const includeProviderErrors = Deno.env.get("DEBUG_PROVIDER_ERRORS") === "true";
 
 const fallbackKnowledge = `
 Srijon Karmakar is a full-stack developer based in Kolkata, India.
@@ -207,19 +216,29 @@ async function callOpenAI(systemPrompt: string, userPrompt: string): Promise<Pro
     throw new Error("OpenAI API key is missing.");
   }
 
+  const model = Deno.env.get("OPENAI_MODEL") ?? "gpt-5.6-sol";
+  const reasoningEffort = Deno.env.get("OPENAI_REASONING_EFFORT");
+  const requestBody: OpenAIChatRequest = {
+    max_completion_tokens: 450,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    model,
+    temperature: 0.2,
+  };
+
+  if (reasoningEffort) {
+    requestBody.reasoning_effort = reasoningEffort;
+  } else if (model.startsWith("gpt-5.6")) {
+    requestBody.reasoning_effort = "none";
+  }
+
   const timeout = withTimeout();
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      body: JSON.stringify({
-        max_tokens: 450,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        model: Deno.env.get("OPENAI_MODEL") ?? "gpt-4o-mini",
-        temperature: 0.2,
-      }),
+      body: JSON.stringify(requestBody),
       headers: {
         authorization: `Bearer ${apiKey}`,
         "content-type": "application/json",
@@ -236,58 +255,6 @@ async function callOpenAI(systemPrompt: string, userPrompt: string): Promise<Pro
     }
 
     return { answer, provider: "openai" };
-  } finally {
-    timeout.clear();
-  }
-}
-
-async function callGemini(systemPrompt: string, userPrompt: string): Promise<ProviderResult> {
-  const apiKey = Deno.env.get("GEMINI_API_KEY");
-
-  if (!apiKey) {
-    throw new Error("Gemini API key is missing.");
-  }
-
-  const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-1.5-flash";
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-  const timeout = withTimeout();
-
-  try {
-    const response = await fetch(endpoint, {
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: userPrompt }],
-            role: "user",
-          },
-        ],
-        generationConfig: {
-          maxOutputTokens: 450,
-          temperature: 0.2,
-        },
-        systemInstruction: {
-          parts: [{ text: systemPrompt }],
-        },
-      }),
-      headers: {
-        "content-type": "application/json",
-      },
-      method: "POST",
-      signal: timeout.signal,
-    });
-
-    const data = await checkedJson(response, "Gemini");
-    const answer = data?.candidates?.[0]?.content?.parts
-      ?.map((part: { text?: string }) => part.text)
-      .filter(Boolean)
-      .join("\n")
-      .trim();
-
-    if (!answer) {
-      throw new Error("Gemini returned an empty answer.");
-    }
-
-    return { answer, provider: "gemini" };
   } finally {
     timeout.clear();
   }
@@ -323,7 +290,7 @@ Deno.serve(async (request) => {
     "Keep answers concise, friendly, and direct. Do not include citations.",
   ].join(" ");
   const userPrompt = `Knowledge context:\n${context.slice(0, 12000)}\n\nVisitor question:\n${question}`;
-  const providers = [callClaude, callOpenAI, callGemini];
+  const providers = [callOpenAI, callClaude];
   const errors: string[] = [];
 
   for (const provider of providers) {
@@ -331,13 +298,15 @@ Deno.serve(async (request) => {
       const result = await provider(systemPrompt, userPrompt);
       return jsonResponse(result);
     } catch (error) {
-      errors.push(error instanceof Error ? error.message : String(error));
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(message);
+      console.warn(message);
     }
   }
 
   return jsonResponse({
     answer: ruleBasedAnswer(question),
-    errors,
+    ...(includeProviderErrors ? { errors } : {}),
     provider: "rule-based",
   });
 });
