@@ -53,6 +53,12 @@ function withTimeout() {
   };
 }
 
+function isGreeting(question: string) {
+  return /^(hi|hii|hello|hey|yo|sup|namaste|hola|good\s+(morning|afternoon|evening))[\s!.?]*$/i.test(
+    question.trim()
+  );
+}
+
 function isSrijonRelatedQuestion(question: string) {
   const normalized = question.toLowerCase();
   const outOfScopeTerms = [
@@ -69,6 +75,10 @@ function isSrijonRelatedQuestion(question: string) {
 
   if (outOfScopeTerms.some((term) => normalized.includes(term))) {
     return false;
+  }
+
+  if (isGreeting(question)) {
+    return true;
   }
 
   const relatedTerms = [
@@ -118,6 +128,10 @@ function outOfScopeAnswer() {
 
 function ruleBasedAnswer(question: string) {
   const normalized = question.toLowerCase();
+
+  if (isGreeting(question)) {
+    return "Hi. I can help you learn about Srijon's skills, projects, experience, education, services, or contact details.";
+  }
 
   if (!isSrijonRelatedQuestion(question)) {
     return outOfScopeAnswer();
@@ -284,6 +298,7 @@ Deno.serve(async (request) => {
   const systemPrompt = [
     "You are Srijon's portfolio chatbot.",
     "Answer only questions about Srijon Karmakar, his background, work, projects, skills, services, CV, and contact details.",
+    "For greetings or small talk, briefly greet the visitor and invite them to ask about Srijon.",
     "Use only the supplied context. Do not invent missing facts.",
     "If the answer is not in the context, say that you do not have that specific detail yet.",
     "If a question is unrelated to Srijon, say that you only answer questions about Srijon.",

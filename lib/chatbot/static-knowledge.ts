@@ -137,6 +137,12 @@ export async function getStaticKnowledgeContext() {
     .join("\n\n---\n\n");
 }
 
+function isGreeting(question: string) {
+  return /^(hi|hii|hello|hey|yo|sup|namaste|hola|good\s+(morning|afternoon|evening))[\s!.?]*$/i.test(
+    question.trim()
+  );
+}
+
 export function isSrijonRelatedQuestion(question: string) {
   const normalized = question.toLowerCase();
   const outOfScopeTerms = [
@@ -153,6 +159,10 @@ export function isSrijonRelatedQuestion(question: string) {
 
   if (outOfScopeTerms.some((term) => normalized.includes(term))) {
     return false;
+  }
+
+  if (isGreeting(question)) {
+    return true;
   }
 
   const relatedTerms = [
@@ -199,6 +209,10 @@ export function isSrijonRelatedQuestion(question: string) {
 export async function staticChatbotAnswer(question: string) {
   const normalized = question.toLowerCase();
   const knowledge = await loadPublicKnowledge();
+
+  if (isGreeting(question)) {
+    return "Hi. I can help you learn about Srijon's skills, projects, experience, education, services, or contact details.";
+  }
 
   if (!isSrijonRelatedQuestion(question)) {
     return "I only answer questions about Srijon. If you want to know about him, ask me about his skills, projects, experience, education, services, or contact details.";

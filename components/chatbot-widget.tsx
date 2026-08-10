@@ -3,7 +3,6 @@
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import {
   getStaticKnowledgeContext,
-  isSrijonRelatedQuestion,
   staticChatbotAnswer,
 } from "@/lib/chatbot/static-knowledge";
 
@@ -131,9 +130,9 @@ export function ChatbotWidget() {
     setIsSending(true);
 
     try {
-      const answer = isSrijonRelatedQuestion(question)
-        ? await callSupabaseChatbot(question).catch(() => staticChatbotAnswer(question))
-        : await staticChatbotAnswer(question);
+      const answer = await callSupabaseChatbot(question).catch(() =>
+        staticChatbotAnswer(question)
+      );
       await new Promise((resolve) => window.setTimeout(resolve, 280));
       setMessages((current) => [
         ...current,
